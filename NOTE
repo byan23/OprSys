@@ -1,0 +1,7 @@
+TODO:
+1. Run built-in command if it is.
+2. Implement 2 build-in commands: exit & history
+
+NOTE:
+File descriptor:
+  stdin: 0; stdout: 1; stderr: 2

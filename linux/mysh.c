@@ -211,10 +211,10 @@ CMD_MODE get_mode(const char *s) {
     printf("Use it since you are not happy...%lu\n", temp);
     if (*pleft == '\0' || p[1] == '\0') return RUN_HISTORY_MODE;
     else return SYN_ERR;
-  } else if (strlen(p) > 4 && strncmp(p, "exit", 4) == 0) {
+  } else if (strlen(p) >= 4 && strncmp(p, "exit", 4) == 0) {
     if (p[4] == '\0' && !strtok(NULL, WS)) return EXIT_MODE;
     else return SYN_ERR;
-  } else if (strlen(p) > 7 && strncmp(p, "history", 7) == 0) {
+  } else if (strlen(p) >= 7 && strncmp(p, "history", 7) == 0) {
     if (p[7] == '\0' && !strtok(NULL, WS)) return HISTORY_MODE;
     else return SYN_ERR;
   } else {

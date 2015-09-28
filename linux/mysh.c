@@ -37,7 +37,7 @@ void bin_exit();
 // Function for built-in cmd 'history'.
 void bin_history();
 // Function for '!' cmd.
-void run_his_cmd(char *str);
+void run_his_cmd(char *str, int *flag);
 // Function to parse and exec built-in cmd.
 void exec_cmd(char *str);
 
@@ -54,10 +54,14 @@ CMD_MODE get_mode(const char *s);
 // command.
 int main(int argc, char *argv[]) {
   char rc_str[MAX_CLINE];
+  int his_argv = 0;
   while (1) {
     printf("mysh # ");
-    memset(rc_str, 0, MAX_CLINE);
-    fgets(rc_str, MAX_CLINE, stdin);
+    if (!his_argv) {
+      memset(rc_str, 0, MAX_CLINE);
+      fgets(rc_str, MAX_CLINE, stdin);
+    }
+    his_argv = 0;
     // Switch mode.
     CMD_MODE mode = get_mode(rc_str);
     printf("Got mode: %d\n", mode); 
@@ -68,7 +72,7 @@ int main(int argc, char *argv[]) {
       } else {
 	// Adds to history.
 	printf("Adding cmd to history before doing anything.\n");
-	add_to_history(rc_str);
+	if (mode != RUN_HISTORY_MODE) add_to_history(rc_str);
 	if (mode == EXIT_MODE) {
 	  bin_exit();
 	} else {
@@ -82,7 +86,7 @@ int main(int argc, char *argv[]) {
 	      break;
 	    case RUN_HISTORY_MODE:
 	      printf("run his mode\n");
-	      run_his_cmd(rc_str);
+	      run_his_cmd(rc_str, &his_argv);
 	      break;
 	    case RUN_BIN_MODE:
 	      printf("I just parse and pass...\n");
@@ -132,13 +136,38 @@ void exec_cmd(char *str) {
   }
 }
 
-// TODO(byan23): Implement history built-in cmd.
 void bin_history() {
-  return;
+  int i;
+  for (i = 0; i < his_num; ++i) {
+    printf("%d %s", i + 1, his_list[(oldest_idx + i) % HISTORY_POOL_SIZE]);
+  }
 }
 
-void run_his_cmd(char *str) {
-  return;
+// Note that the current cmd is added after a history cmd is copied to 'str'.
+void run_his_cmd(char *str, int *flag) {
+  assert(str[0] == '!');
+  int idx;
+  printf("Expo cmd: %s\n", str);
+  // 2 because "!\n".
+  if (strlen(str) == 2) {
+    printf("Last history...\n");
+    // Minuses 2 because current '!' cmd is already added into the pool.
+    idx = (oldest_idx + his_num - 1) % HISTORY_POOL_SIZE;
+  } else {
+    long num = strtol(&str[1], NULL, 10);
+    if (num >= his_num) {
+      write(STDERR_FILENO, error_message, err_len);
+      return;  
+    } else {
+      idx = (oldest_idx + (int)num - 1) % HISTORY_POOL_SIZE;
+    }
+    printf("%lu history at index: %d\n", index, idx);
+  }
+  *flag = 1;
+  char *backup = strdup(str);
+  memset(str, 0, MAX_CLINE);
+  strcpy(str, his_list[idx]);
+  add_to_history(backup);
 }
 
 // It is caller's responsibility to ensure 'str' is NOT null and 'c' is the
@@ -176,7 +205,7 @@ void print_args(char *args[]) {
   for (i = 0; args[i] != NULL; ++i) {
     printf(" %s", args[i]);
   }
-  printf("\n");
+  //printf("\n");
 }
 
 CMD_MODE get_mode(const char *s) {
@@ -209,7 +238,7 @@ CMD_MODE get_mode(const char *s) {
     char *pleft;
     long temp = strtol(&p[1], &pleft, 10);
     printf("Use it since you are not happy...%lu\n", temp);
-    if (*pleft == '\0' || p[1] == '\0') return RUN_HISTORY_MODE;
+    if (p[1] == '\0' || *pleft == '\0') return RUN_HISTORY_MODE;
     else return SYN_ERR;
   } else if (strlen(p) >= 4 && strncmp(p, "exit", 4) == 0) {
     if (p[4] == '\0' && !strtok(NULL, WS)) return EXIT_MODE;

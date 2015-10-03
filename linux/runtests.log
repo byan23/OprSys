@@ -1,0 +1,563 @@
+starting build
+
+**********************************************************************
+
+Test build
+build project using make
+
+**********************************************************************
+Trying to clean project using make clean
+make clean
+rm -fv *.o
+rm mysh
+rm: cannot remove `mysh': No such file or directory
+make: *** [clean] Error 1
+Trying to build project using make
+make
+gcc -c mysh.c
+gcc -o mysh mysh.o -Wall -Werror
+
+
+test build PASSED
+ (build project using make)
+
+starting basic
+
+**********************************************************************
+
+Test basic
+run a single command with no arguments
+
+**********************************************************************
+/tmp/tmp3cdeg1/p/./mysh /u/c/s/cs537-1/ta/tests/2a/basic/in
+
+
+test basic FAILED
+ (run a single command with no arguments)
+ Timelimit (5.0s) exceeded
+
+starting blank
+
+**********************************************************************
+
+Test blank
+an empty batch file
+
+**********************************************************************
+/tmp/tmp3cdeg1/p/./mysh /u/c/s/cs537-1/ta/tests/2a/blank/in
+
+
+test blank FAILED
+ (an empty batch file)
+ Timelimit (5.0s) exceeded
+
+starting parseargs
+
+**********************************************************************
+
+Test parseargs
+a command with an argument
+
+**********************************************************************
+/tmp/tmp3cdeg1/p/./mysh /u/c/s/cs537-1/ta/tests/2a/parseargs/in
+
+
+test parseargs FAILED
+ (a command with an argument)
+ Timelimit (10.0s) exceeded
+
+starting parseargs2
+
+**********************************************************************
+
+Test parseargs2
+a command with many arguments
+
+**********************************************************************
+/tmp/tmp3cdeg1/p/./mysh /u/c/s/cs537-1/ta/tests/2a/parseargs2/in
+
+
+test parseargs2 FAILED
+ (a command with many arguments)
+ Timelimit (10.0s) exceeded
+
+starting exit
+
+**********************************************************************
+
+Test exit
+the builtin exit command
+
+**********************************************************************
+/tmp/tmp3cdeg1/p/./mysh /u/c/s/cs537-1/ta/tests/2a/exit/in
+
+
+test exit PASSED
+ (the builtin exit command)
+
+starting whitespace
+
+**********************************************************************
+
+Test whitespace
+serveral commands with extra whitespace
+
+**********************************************************************
+/tmp/tmp3cdeg1/p/./mysh /u/c/s/cs537-1/ta/tests/2a/whitespace/in
+
+
+test whitespace FAILED
+ (serveral commands with extra whitespace)
+ Timelimit (10.0s) exceeded
+
+starting args
+
+**********************************************************************
+
+Test args
+too many arguments to mysh
+
+**********************************************************************
+/tmp/tmp3cdeg1/p/./mysh /u/c/s/cs537-1/ta/tests/2a/args/in /bogus
+
+
+test args FAILED
+ (too many arguments to mysh)
+ Timelimit (10.0s) exceeded
+
+starting args2
+
+**********************************************************************
+
+Test args2
+invalid batch file path
+
+**********************************************************************
+/tmp/tmp3cdeg1/p/./mysh /bogus
+Failure: ./mysh gave incorrect standard error.
+Expected: "An error has occurred\n"
+Got:      "An error has occurred\n\0\0\0\0\0\0\0\0"
+
+
+test args2 FAILED
+ (invalid batch file path)
+ ./mysh gave incorrect standard error.
+
+starting longline
+
+**********************************************************************
+
+Test longline
+maximum length line
+
+**********************************************************************
+/tmp/tmp3cdeg1/p/./mysh /u/c/s/cs537-1/ta/tests/2a/longline/in
+
+
+test longline FAILED
+ (maximum length line)
+ Timelimit (10.0s) exceeded
+
+starting toolong
+
+**********************************************************************
+
+Test toolong
+a line that is too long
+
+**********************************************************************
+/tmp/tmp3cdeg1/p/./mysh /u/c/s/cs537-1/ta/tests/2a/toolong/in
+
+
+test toolong FAILED
+ (a line that is too long)
+ Timelimit (10.0s) exceeded
+
+starting badprog
+
+**********************************************************************
+
+Test badprog
+bad executable path as command
+
+**********************************************************************
+/tmp/tmp3cdeg1/p/./mysh /u/c/s/cs537-1/ta/tests/2a/badprog/in
+
+
+test badprog FAILED
+ (bad executable path as command)
+ Timelimit (10.0s) exceeded
+
+starting errout
+
+**********************************************************************
+
+Test errout
+a called program produces error output, but no errors from the shell itself
+
+**********************************************************************
+/tmp/tmp3cdeg1/p/./mysh /u/c/s/cs537-1/ta/tests/2a/errout/in
+
+
+test errout FAILED
+ (a called program produces error output, but no errors from the shell itself)
+ Timelimit (10.0s) exceeded
+
+starting badexit
+
+**********************************************************************
+
+Test badexit
+invalid arguments to exit
+
+**********************************************************************
+/tmp/tmp3cdeg1/p/./mysh /u/c/s/cs537-1/ta/tests/2a/badexit/in
+
+
+test badexit FAILED
+ (invalid arguments to exit)
+ Timelimit (10.0s) exceeded
+
+starting basic_hist
+
+**********************************************************************
+
+Test basic_hist
+access to an index older than last 20 entries
+
+**********************************************************************
+/tmp/tmp3cdeg1/p/./mysh /u/c/s/cs537-1/ta/tests/2a/basic_hist/in
+
+
+test basic_hist FAILED
+ (access to an index older than last 20 entries)
+ Timelimit (5.0s) exceeded
+
+starting extraargs_exclaim
+
+**********************************************************************
+
+Test extraargs_exclaim
+passing extra args to !
+
+**********************************************************************
+/tmp/tmp3cdeg1/p/./mysh /u/c/s/cs537-1/ta/tests/2a/extraargs_exclaim/in
+
+
+test extraargs_exclaim FAILED
+ (passing extra args to !)
+ Timelimit (5.0s) exceeded
+
+starting extraargs_hist
+
+**********************************************************************
+
+Test extraargs_hist
+passing extra args to history
+
+**********************************************************************
+/tmp/tmp3cdeg1/p/./mysh /u/c/s/cs537-1/ta/tests/2a/extraargs_hist/in
+
+
+test extraargs_hist FAILED
+ (passing extra args to history)
+ Timelimit (5.0s) exceeded
+
+starting hist1
+
+**********************************************************************
+
+Test hist1
+check if the first command in history can be executed using !, if !1 is the 21st command
+
+**********************************************************************
+/tmp/tmp3cdeg1/p/./mysh /u/c/s/cs537-1/ta/tests/2a/hist1/in
+
+
+test hist1 FAILED
+ (check if the first command in history can be executed using !, if !1 is the 21st command)
+ Timelimit (5.0s) exceeded
+
+starting hist2
+
+**********************************************************************
+
+Test hist2
+display last 20 commands including history
+
+**********************************************************************
+/tmp/tmp3cdeg1/p/./mysh /u/c/s/cs537-1/ta/tests/2a/hist2/in
+
+
+test hist2 FAILED
+ (display last 20 commands including history)
+ Timelimit (5.0s) exceeded
+
+starting hist3
+
+**********************************************************************
+
+Test hist3
+invalid index in !
+
+**********************************************************************
+/tmp/tmp3cdeg1/p/./mysh /u/c/s/cs537-1/ta/tests/2a/hist3/in
+
+
+test hist3 FAILED
+ (invalid index in !)
+ Timelimit (5.0s) exceeded
+
+starting invalid_arg
+
+**********************************************************************
+
+Test invalid_arg
+invalid arg to ls
+
+**********************************************************************
+/tmp/tmp3cdeg1/p/./mysh /u/c/s/cs537-1/ta/tests/2a/invalid_arg/in
+
+
+test invalid_arg FAILED
+ (invalid arg to ls)
+ Timelimit (5.0s) exceeded
+
+starting randin
+
+**********************************************************************
+
+Test randin
+random input xyz
+
+**********************************************************************
+/tmp/tmp3cdeg1/p/./mysh /u/c/s/cs537-1/ta/tests/2a/randin/in
+
+
+test randin FAILED
+ (random input xyz)
+ Timelimit (5.0s) exceeded
+
+starting redir_hist
+
+**********************************************************************
+
+Test redir_hist
+to check if the redirection in a history command is taken care of
+
+**********************************************************************
+/tmp/tmp3cdeg1/p/./mysh /u/c/s/cs537-1/ta/tests/2a/redir_hist/in
+
+
+test redir_hist FAILED
+ (to check if the redirection in a history command is taken care of)
+ Timelimit (5.0s) exceeded
+
+starting valid_hist
+
+**********************************************************************
+
+Test valid_hist
+to check if the commands entered in history have correct syntax
+
+**********************************************************************
+/tmp/tmp3cdeg1/p/./mysh /u/c/s/cs537-1/ta/tests/2a/valid_hist/in
+
+
+test valid_hist FAILED
+ (to check if the commands entered in history have correct syntax)
+ Timelimit (5.0s) exceeded
+
+starting wrong_redir
+
+**********************************************************************
+
+Test wrong_redir
+to check if there is a wrong use of redirection mkdir > 1.txt
+
+**********************************************************************
+/tmp/tmp3cdeg1/p/./mysh /u/c/s/cs537-1/ta/tests/2a/wrong_redir/in
+
+
+test wrong_redir FAILED
+ (to check if there is a wrong use of redirection mkdir > 1.txt)
+ Timelimit (10.0s) exceeded
+
+starting redirect
+
+**********************************************************************
+
+Test redirect
+simple redirection using >
+
+**********************************************************************
+/tmp/tmp3cdeg1/p/./mysh /u/c/s/cs537-1/ta/tests/2a/redirect/in
+
+
+test redirect FAILED
+ (simple redirection using >)
+ Timelimit (10.0s) exceeded
+
+starting redirect2
+
+**********************************************************************
+
+Test redirect2
+redirection and mutiple arguments
+
+**********************************************************************
+/tmp/tmp3cdeg1/p/./mysh /u/c/s/cs537-1/ta/tests/2a/redirect2/in
+
+
+test redirect2 FAILED
+ (redirection and mutiple arguments)
+ Timelimit (10.0s) exceeded
+
+starting badredir
+
+**********************************************************************
+
+Test badredir
+redirect to invalid path
+
+**********************************************************************
+/tmp/tmp3cdeg1/p/./mysh /u/c/s/cs537-1/ta/tests/2a/badredir/in
+
+
+test badredir FAILED
+ (redirect to invalid path)
+ Timelimit (10.0s) exceeded
+
+starting badredir2
+
+**********************************************************************
+
+Test badredir2
+redirect to multiple paths
+
+**********************************************************************
+/tmp/tmp3cdeg1/p/./mysh /u/c/s/cs537-1/ta/tests/2a/badredir2/in
+
+
+test badredir2 FAILED
+ (redirect to multiple paths)
+ Timelimit (10.0s) exceeded
+
+**********************************************************************
+Summary:
+test build PASSED
+ (build project using make)
+
+test basic FAILED
+ (run a single command with no arguments)
+ Timelimit (5.0s) exceeded
+
+test blank FAILED
+ (an empty batch file)
+ Timelimit (5.0s) exceeded
+
+test parseargs FAILED
+ (a command with an argument)
+ Timelimit (10.0s) exceeded
+
+test parseargs2 FAILED
+ (a command with many arguments)
+ Timelimit (10.0s) exceeded
+
+test exit PASSED
+ (the builtin exit command)
+
+test whitespace FAILED
+ (serveral commands with extra whitespace)
+ Timelimit (10.0s) exceeded
+
+test args FAILED
+ (too many arguments to mysh)
+ Timelimit (10.0s) exceeded
+
+test args2 FAILED
+ (invalid batch file path)
+ ./mysh gave incorrect standard error.
+
+test longline FAILED
+ (maximum length line)
+ Timelimit (10.0s) exceeded
+
+test toolong FAILED
+ (a line that is too long)
+ Timelimit (10.0s) exceeded
+
+test badprog FAILED
+ (bad executable path as command)
+ Timelimit (10.0s) exceeded
+
+test errout FAILED
+ (a called program produces error output, but no errors from the shell itself)
+ Timelimit (10.0s) exceeded
+
+test badexit FAILED
+ (invalid arguments to exit)
+ Timelimit (10.0s) exceeded
+
+test basic_hist FAILED
+ (access to an index older than last 20 entries)
+ Timelimit (5.0s) exceeded
+
+test extraargs_exclaim FAILED
+ (passing extra args to !)
+ Timelimit (5.0s) exceeded
+
+test extraargs_hist FAILED
+ (passing extra args to history)
+ Timelimit (5.0s) exceeded
+
+test hist1 FAILED
+ (check if the first command in history can be executed using !, if !1 is the 21st command)
+ Timelimit (5.0s) exceeded
+
+test hist2 FAILED
+ (display last 20 commands including history)
+ Timelimit (5.0s) exceeded
+
+test hist3 FAILED
+ (invalid index in !)
+ Timelimit (5.0s) exceeded
+
+test invalid_arg FAILED
+ (invalid arg to ls)
+ Timelimit (5.0s) exceeded
+
+test randin FAILED
+ (random input xyz)
+ Timelimit (5.0s) exceeded
+
+test redir_hist FAILED
+ (to check if the redirection in a history command is taken care of)
+ Timelimit (5.0s) exceeded
+
+test valid_hist FAILED
+ (to check if the commands entered in history have correct syntax)
+ Timelimit (5.0s) exceeded
+
+test wrong_redir FAILED
+ (to check if there is a wrong use of redirection mkdir > 1.txt)
+ Timelimit (10.0s) exceeded
+
+test redirect FAILED
+ (simple redirection using >)
+ Timelimit (10.0s) exceeded
+
+test redirect2 FAILED
+ (redirection and mutiple arguments)
+ Timelimit (10.0s) exceeded
+
+test badredir FAILED
+ (redirect to invalid path)
+ Timelimit (10.0s) exceeded
+
+test badredir2 FAILED
+ (redirect to multiple paths)
+ Timelimit (10.0s) exceeded
+
+Passed 2 of 29 tests.
+Overall 2 of 29

@@ -1,0 +1,610 @@
+ls
+batch_file
+batch_result
+batch_result2
+mysh
+mysh.c
+small_batch
+ls -l
+total 37
+-rw-rw-r-- 1 boqun boqun   159 Oct  3 14:27 batch_file
+-rw-rw-r-- 1 boqun boqun 13146 Oct  3 14:28 batch_result
+-rw-rw-r-- 1 boqun boqun    71 Oct  3 14:30 batch_result2
+-rwxrwxr-x 1 boqun boqun 12919 Oct  3 14:29 mysh
+-rw-rw-r-- 1 boqun boqun  8126 Oct  3 14:29 mysh.c
+-rw-rw-r-- 1 boqun boqun    26 Oct  3 14:14 small_batch
+history
+!2
+total 37
+-rw-rw-r-- 1 boqun boqun   159 Oct  3 14:27 batch_file
+-rw-rw-r-- 1 boqun boqun 13146 Oct  3 14:28 batch_result
+-rw-rw-r-- 1 boqun boqun   417 Oct  3 14:30 batch_result2
+-rwxrwxr-x 1 boqun boqun 12919 Oct  3 14:29 mysh
+-rw-rw-r-- 1 boqun boqun  8126 Oct  3 14:29 mysh.c
+-rw-rw-r-- 1 boqun boqun    26 Oct  3 14:14 small_batch
+	    !	      
+total 37
+-rw-rw-r-- 1 boqun boqun   159 Oct  3 14:27 batch_file
+-rw-rw-r-- 1 boqun boqun 13146 Oct  3 14:28 batch_result
+-rw-rw-r-- 1 boqun boqun   766 Oct  3 14:30 batch_result2
+-rwxrwxr-x 1 boqun boqun 12919 Oct  3 14:29 mysh
+-rw-rw-r-- 1 boqun boqun  8126 Oct  3 14:29 mysh.c
+-rw-rw-r-- 1 boqun boqun    26 Oct  3 14:14 small_batch
+!5
+    
+       
+
+how are you
+# of args: 2
+Getting mode...
+built-in mode
+Got mode: 4
+Adding cmd to history before doing anything.
+History pool is not full yet.
+a mode we need to do something...
+I just parse and pass...
+Printing args: ls
+Parent process: 31431
+Getting mode...
+built-in mode
+Got mode: 4
+Adding cmd to history before doing anything.
+History pool is not full yet.
+a mode we need to do something...
+I just parse and pass...
+Printing args: ls -l
+Parent process: 31431
+Getting mode...
+Got mode: 2
+Adding cmd to history before doing anything.
+History pool is not full yet.
+a mode we need to do something...
+his mode
+1 ls
+2 ls -l
+3 history
+Getting mode...
+Got mode: 3
+Adding cmd to history before doing anything.
+a mode we need to do something...
+run his mode
+Expo cmd: !2
+
+2 history at index: 1
+Getting mode...
+built-in mode
+Got mode: 4
+Adding cmd to history before doing anything.
+History pool is not full yet.
+a mode we need to do something...
+I just parse and pass...
+Printing args: ls -l
+Parent process: 31431
+Getting mode...
+Got mode: 3
+Adding cmd to history before doing anything.
+a mode we need to do something...
+run his mode
+Expo cmd: 	    !	      
+
+Last history...
+Getting mode...
+built-in mode
+Got mode: 4
+Adding cmd to history before doing anything.
+History pool is not full yet.
+a mode we need to do something...
+I just parse and pass...
+Printing args: ls -l
+Parent process: 31431
+Getting mode...
+Got mode: 3
+Adding cmd to history before doing anything.
+a mode we need to do something...
+run his mode
+Expo cmd: !5
+
+Getting mode...
+Got mode: 6
+Getting mode...
+Got mode: 6
+Getting mode...
+Got mode: 6
+Getting mode...
+built-in mode
+Got mode: 4
+Adding cmd to history before doing anything.
+History pool is not full yet.
+a mode we need to do something...
+I just parse and pass...
+Printing args: how are you
+!0
+ls assap
+	  pwd 
+/afs/cs.wisc.edu/u/b/o/boqun/private/cs537/assignment2/linux
+!
+/afs/cs.wisc.edu/u/b/o/boqun/private/cs537/assignment2/linux
+!
+/afs/cs.wisc.edu/u/b/o/boqun/private/cs537/assignment2/linux
+!
+/afs/cs.wisc.edu/u/b/o/boqun/private/cs537/assignment2/linux
+!
+/afs/cs.wisc.edu/u/b/o/boqun/private/cs537/assignment2/linux
+!	
+# of args: 2
+Getting mode...
+built-in mode
+Got mode: 4
+Adding cmd to history before doing anything.
+History pool is not full yet.
+a mode we need to do something...
+I just parse and pass...
+Printing args: ls
+Parent process: 31431
+Getting mode...
+built-in mode
+Got mode: 4
+Adding cmd to history before doing anything.
+History pool is not full yet.
+a mode we need to do something...
+I just parse and pass...
+Printing args: ls -l
+Parent process: 31431
+Getting mode...
+Got mode: 2
+Adding cmd to history before doing anything.
+History pool is not full yet.
+a mode we need to do something...
+his mode
+1 ls
+2 ls -l
+3 history
+Getting mode...
+Got mode: 3
+Adding cmd to history before doing anything.
+a mode we need to do something...
+run his mode
+Expo cmd: !2
+
+2 history at index: 1
+Getting mode...
+built-in mode
+Got mode: 4
+Adding cmd to history before doing anything.
+History pool is not full yet.
+a mode we need to do something...
+I just parse and pass...
+Printing args: ls -l
+Parent process: 31431
+Getting mode...
+Got mode: 3
+Adding cmd to history before doing anything.
+a mode we need to do something...
+run his mode
+Expo cmd: 	    !	      
+
+Last history...
+Getting mode...
+built-in mode
+Got mode: 4
+Adding cmd to history before doing anything.
+History pool is not full yet.
+a mode we need to do something...
+I just parse and pass...
+Printing args: ls -l
+Parent process: 31431
+Getting mode...
+Got mode: 3
+Adding cmd to history before doing anything.
+a mode we need to do something...
+run his mode
+Expo cmd: !5
+
+Getting mode...
+Got mode: 6
+Getting mode...
+Got mode: 6
+Getting mode...
+Got mode: 6
+Getting mode...
+built-in mode
+Got mode: 4
+Adding cmd to history before doing anything.
+History pool is not full yet.
+a mode we need to do something...
+I just parse and pass...
+Printing args: how are you
+Parent process: 31431
+Getting mode...
+Got mode: 3
+Adding cmd to history before doing anything.
+a mode we need to do something...
+run his mode
+Expo cmd: !0
+
+Getting mode...
+built-in mode
+Got mode: 4
+Adding cmd to history before doing anything.
+History pool is not full yet.
+a mode we need to do something...
+I just parse and pass...
+Printing args: ls assap
+Parent process: 31431
+Getting mode...
+built-in mode
+Got mode: 4
+Adding cmd to history before doing anything.
+History pool is not full yet.
+a mode we need to do something...
+I just parse and pass...
+Printing args: pwd
+Parent process: 31431
+Getting mode...
+Got mode: 3
+Adding cmd to history before doing anything.
+a mode we need to do something...
+run his mode
+Expo cmd: !
+
+Last history...
+Getting mode...
+built-in mode
+Got mode: 4
+Adding cmd to history before doing anything.
+History pool is not full yet.
+a mode we need to do something...
+I just parse and pass...
+Printing args: pwd
+Parent process: 31431
+Getting mode...
+Got mode: 3
+Adding cmd to history before doing anything.
+a mode we need to do something...
+run his mode
+Expo cmd: !
+
+Last history...
+Getting mode...
+built-in mode
+Got mode: 4
+Adding cmd to history before doing anything.
+History pool is not full yet.
+a mode we need to do something...
+I just parse and pass...
+Printing args: pwd
+Parent process: 31431
+Getting mode...
+Got mode: 3
+Adding cmd to history before doing anything.
+a mode we need to do something...
+run his mode
+Expo cmd: !
+
+Last history...
+Getting mode...
+built-in mode
+Got mode: 4
+Adding cmd to history before doing anything.
+History pool is not full yet.
+a mode we need to do something...
+I just parse and pass...
+Printing args: pwd
+Parent process: 31431
+Getting mode...
+Got mode: 3
+Adding cmd to history before doing anything.
+a mode we need to do something...
+run his mode
+Expo cmd: !
+
+Last history...
+Getting mode...
+built-in mode
+Got mode: 4
+Adding cmd to history before doing anything.
+History pool is not full yet.
+a mode we need to do something...
+I just parse and pass...
+Printing args: pwd
+Parent process: 31431
+Getting mode...
+Got mode: 3
+Adding cmd to history before doing anything.
+a mode we need to do something...
+run his mode
+Expo cmd: !	
+
+Last history...
+Getting mode...
+built-in mode
+Got mode: 4
+Adding cmd to history before doing anything.
+History/afs/cs.wisc.edu/u/b/o/boqun/private/cs537/assignment2/linux
+!>try>me
+ls -al
+total 48
+drwxrwxr-x 2 boqun boqun  2048 Oct  3 14:30 .
+drwxrwxr-x 5 boqun boqun  2048 Sep 29 22:23 ..
+-rw-rw-r-- 1 boqun boqun   159 Oct  3 14:27 batch_file
+-rw-rw-r-- 1 boqun boqun 13146 Oct  3 14:28 batch_result
+-rw-rw-r-- 1 boqun boqun  7432 Oct  3 14:30 batch_result2
+-rwxrwxr-x 1 boqun boqun 12919 Oct  3 14:29 mysh
+-rw-rw-r-- 1 boqun boqun  8126 Oct  3 14:29 mysh.c
+-rw-rw-r-- 1 boqun boqun    26 Oct  3 14:14 small_batch
+	ls	  -al	      
+total 48
+drwxrwxr-x 2 boqun boqun  2048 Oct  3 14:30 .
+drwxrwxr-x 5 boqun boqun  2048 Sep 29 22:23 ..
+-rw-rw-r-- 1 boqun boqun   159 Oct  3 14:27 batch_file
+-rw-rw-r-- 1 boqun boqun 13146 Oct  3 14:28 batch_result
+-rw-rw-r-- 1 boqun boqun  7877 Oct  3 14:30 batch_result2
+-rwxrwxr-x 1 boqun boqun 12919 Oct  3 14:29 mysh
+-rw-rw-r-- 1 boqun boqun  8126 Oct  3 14:29 mysh.c
+-rw-rw-r-- 1 boqun boqun    26 Oct  3 14:14 small_batch
+!1
+batch_file
+batch_result
+batch_result2
+mysh
+mysh.c
+small_batch
+!@
+!
+batch_file
+batch_result
+batch_result2
+mysh
+mysh.c
+small_batch
+!
+batch_file
+batch_result
+batch_result2
+mysh
+mysh.c
+small_batch
+!
+batch_file
+batch_result
+batch_result2
+mysh
+mysh.c
+small_batch
+  #!  
+ pool is not full yet.
+a mode we need to do something...
+I just parse and pass...
+Printing args: pwd
+Parent process: 31431
+Getting mode...
+command needs redirection...
+Got mode: 5
+Syntax error!
+Getting mode...
+built-in mode
+Got mode: 4
+Adding cmd to history before doing anything.
+History pool is not full yet.
+a mode we need to do something...
+I just parse and pass...
+Printing args: ls -al
+Parent process: 31431
+Getting mode...
+built-in mode
+Got mode: 4
+Adding cmd to history before doing anything.
+History pool is not full yet.
+a mode we need to do something...
+I just parse and pass...
+Printing args: ls -al
+Parent process: 31431
+Getting mode...
+Got mode: 3
+Adding cmd to history before doing anything.
+a mode we need to do something...
+run his mode
+Expo cmd: !1
+
+1 history at index: 0
+Getting mode...
+built-in mode
+Got mode: 4
+Adding cmd to history before doing anything.
+History pool is not full yet.
+a mode we need to do something...
+I just parse and pass...
+Printing args: ls
+Parent process: 31431
+Getting mode...
+Got mode: 5
+Syntax error!
+Getting mode...
+Got mode: 3
+Adding cmd to history before doing anything.
+a mode we need to do something...
+run his mode
+Expo cmd: !
+
+Last history...
+Getting mode...
+built-in mode
+Got mode: 4
+Adding cmd to history before doing anything.
+History pool is not full yet.
+a mode we need to do something...
+I just parse and pass...
+Printing args: ls
+Parent process: 31431
+Getting mode...
+Got mode: 3
+Adding cmd to history before doing anything.
+a mode we need to do something...
+run his mode
+Expo cmd: !
+
+Last history...
+Getting mode...
+built-in mode
+Got mode: 4
+Adding cmd to history before doing anything.
+History pool is not full yet.
+a mode we need to do something...
+I just parse and pass...
+Printing args: ls
+Parent process: 31431
+Getting mode...
+Got mode: 3
+Adding cmd to history before doing anything.
+a mode we need to do something...
+run his mode
+Expo cmd: !
+
+Last history...
+Getting mode...
+built-in mode
+Got mode: 4
+Adding cmd to history before doing anything.
+History pool is not full yet.
+a mode we need to do something...
+I just parse and pass...
+Printing args: ls
+Parent process: 31431
+Getting mode...
+built-in mode
+Got mode: 4
+Adding cmd to history before doing anything.
+History pool is not full yet.
+a mode we need to do something...
+I just parse and pass...
+Printing args: #!
+>
+!
+ pool is not full yet.
+a mode we need to do something...
+I just parse and pass...
+Printing args: pwd
+Parent process: 31431
+Getting mode...
+command needs redirection...
+Got mode: 5
+Syntax error!
+Getting mode...
+built-in mode
+Got mode: 4
+Adding cmd to history before doing anything.
+History pool is not full yet.
+a mode we need to do something...
+I just parse and pass...
+Printing args: ls -al
+Parent process: 31431
+Getting mode...
+built-in mode
+Got mode: 4
+Adding cmd to history before doing anything.
+History pool is not full yet.
+a mode we need to do something...
+I just parse and pass...
+Printing args: ls -al
+Parent process: 31431
+Getting mode...
+Got mode: 3
+Adding cmd to history before doing anything.
+a mode we need to do something...
+run his mode
+Expo cmd: !1
+
+1 history at index: 0
+Getting mode...
+built-in mode
+Got mode: 4
+Adding cmd to history before doing anything.
+History pool is not full yet.
+a mode we need to do something...
+I just parse and pass...
+Printing args: ls
+Parent process: 31431
+Getting mode...
+Got mode: 5
+Syntax error!
+Getting mode...
+Got mode: 3
+Adding cmd to history before doing anything.
+a mode we need to do something...
+run his mode
+Expo cmd: !
+
+Last history...
+Getting mode...
+built-in mode
+Got mode: 4
+Adding cmd to history before doing anything.
+History pool is not full yet.
+a mode we need to do something...
+I just parse and pass...
+Printing args: ls
+Parent process: 31431
+Getting mode...
+Got mode: 3
+Adding cmd to history before doing anything.
+a mode we need to do something...
+run his mode
+Expo cmd: !
+
+Last history...
+Getting mode...
+built-in mode
+Got mode: 4
+Adding cmd to history before doing anything.
+History pool is not full yet.
+a mode we need to do something...
+I just parse and pass...
+Printing args: ls
+Parent process: 31431
+Getting mode...
+Got mode: 3
+Adding cmd to history before doing anything.
+a mode we need to do something...
+run his mode
+Expo cmd: !
+
+Last history...
+Getting mode...
+built-in mode
+Got mode: 4
+Adding cmd to history before doing anything.
+History pool is not full yet.
+a mode we need to do something...
+I just parse and pass...
+Printing args: ls
+Parent process: 31431
+Getting mode...
+built-in mode
+Got mode: 4
+Adding cmd to history before doing anything.
+History pool is not full yet.
+a mode we need to do something...
+I just parse and pass...
+Printing args: #!
+Parent process: 31431
+Getting mode...
+command needs redirection...
+Got mode: 5
+Syntax error!
+Getting mode...
+Got mode: 3
+Adding cmd to history before doing anything.
+a mode we need to do something...
+run his mode
+Expo cmd: !
+
+Last history...
+Getting mode...
+built-in mode
+Got mode: 4
+Adding cmd to history before doing anything.
+a mode we need to do something...
+I just parse and pass...
+Printing args: #!
+history
+

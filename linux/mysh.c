@@ -5,6 +5,9 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <limits.h>
 
 #define MAX_CLINE 512
 // whitespace
@@ -12,12 +15,12 @@
 // TODO(byan23): Maybe add reallocation for cases larger than MAX_TOKEN or
 // eventially come up with a dynamical way to allocate the mem.
 #define MAX_TOKEN 50
-#define HISTORY_POOL_SIZE 20
+#define HIS_POOL_SIZE 20
 
 typedef enum CMD_MODE {
   EXIT_MODE	    = 1,
-  HISTORY_MODE	    = 2,
-  RUN_HISTORY_MODE  = 3,
+  HIS_MODE	    = 2,
+  RUN_HIS_MODE	    = 3,
   RUN_BIN_MODE	    = 4,
   SYN_ERR	    = 5,
   NULL_MODE	    = 6
@@ -25,75 +28,88 @@ typedef enum CMD_MODE {
 
 // whatever error...
 static char error_message[30] = "An error has occurred\n";
-#define err_len 30
+#define err_len strlen(error_message) 
 // The list of history cmds.
-char *his_list[HISTORY_POOL_SIZE];
+char *his_list[HIS_POOL_SIZE];
+// NOT an idx.
 static int his_num = 0;
-// current latest cmd index
-static int oldest_idx = 0;
 
 // Function for built-in cmd 'exit'.
 void bin_exit();
 // Function for built-in cmd 'history'.
 void bin_history();
 // Function for '!' cmd.
-void run_his_cmd(char *str, int *flag);
+void run_his_cmd(char *str, char **tokens, int *flag);
 // Function to parse and exec built-in cmd.
-void exec_cmd(char *str);
+void exec_cmd(char **tokens);
 
 // helper functions that (some) may be deleted (sadly) later...
-void print_args(char *args[]);
+char **tokenize(const char *str);
+void print_args(char **args);
 void add_to_history(const char *str);
-int token_num(char *str, char c);
-// Passes in the whole cmd string, returns status including syntax_err mode.
-// TODO(byan23): Try to combine checking mode and tokenizing.
-CMD_MODE get_mode(const char *s);
-
+// Passes in the tokenized cmd, returns status including syntax_err mode.
+CMD_MODE get_mode(char **tokens);
 
 // Main for shell, syntax errors should be checked before calling any
 // command.
+// Note that for batch mode, once it reaches the end of the batch file, the
+// batch file stream is set to NULL, and thus jumps out of batch mode.
 int main(int argc, char *argv[]) {
+  //printf("# of args: %d\n", argc); 
   char rc_str[MAX_CLINE];
   int his_argv = 0;
+  FILE *fs = stdin;
+  if (argc == 2) {
+    fs = fopen(argv[1], "r");
+    if (!fs) {
+      write(STDERR_FILENO, error_message, err_len);
+      exit(1);
+    }
+  }
   while (1) {
-    printf("mysh # ");
+    // In run_his_mode, don't get new cmd from input.
     if (!his_argv) {
       memset(rc_str, 0, MAX_CLINE);
-      fgets(rc_str, MAX_CLINE, stdin);
+      if (fs == stdin) printf("mysh # ");
+      if (!fgets(rc_str, MAX_CLINE, fs)) {
+	fclose(fs);
+	fs = stdin;
+	continue;
+      }
+      if (fs != stdin) write(STDOUT_FILENO, rc_str, strlen(rc_str));
     }
     his_argv = 0;
     // Switch mode.
-    CMD_MODE mode = get_mode(rc_str);
-    printf("Got mode: %d\n", mode); 
+    char **tokens = tokenize(rc_str);
+    CMD_MODE mode = get_mode(tokens);
+    // printf("Got mode: %d\n", mode); 
     if (mode != NULL_MODE) {
       if (mode == SYN_ERR) {
-	printf("Syntax error!\n");
+	//printf("Syntax error!\n");
 	write(STDERR_FILENO, error_message, err_len);
       } else {
 	// Adds to history.
-	printf("Adding cmd to history before doing anything.\n");
-	if (mode != RUN_HISTORY_MODE) add_to_history(rc_str);
+	//printf("Adding cmd to history before doing anything.\n");
+	if (mode != RUN_HIS_MODE) add_to_history(rc_str);
 	if (mode == EXIT_MODE) {
 	  bin_exit();
 	} else {
-	  // Parse the cmd.
-	  // TODO(byan23): Made it a dynamically allocated variable.
-	  printf("a mode we need to do something...\n");
+	  //printf("a mode we need to do something...\n");
 	  switch (mode) {
-	    case HISTORY_MODE:
-	      printf("his mode\n");
+	    case HIS_MODE:
+	      //printf("his mode\n");
 	      bin_history();
 	      break;
-	    case RUN_HISTORY_MODE:
-	      printf("run his mode\n");
-	      run_his_cmd(rc_str, &his_argv);
+	    case RUN_HIS_MODE:
+	      //printf("run his mode\n");
+	      run_his_cmd(rc_str, tokens, &his_argv);
 	      break;
 	    case RUN_BIN_MODE:
-	      printf("I just parse and pass...\n");
-	      exec_cmd(rc_str);
+	      //printf("I just parse and pass...\n");
+	      exec_cmd(tokens);
 	      break;
 	    default:
-	      printf("Unexpected mode: %d\n", mode);
+	      //printf("Unexpected mode: %d\n", mode);
 	      break;
 	  }
 	}
@@ -108,146 +124,157 @@ void bin_exit() {
 }
 
 // TODO(byan23): Dynamically allocate char *argv[].
-void exec_cmd(char *str) {
-  char *rc_argv[MAX_TOKEN];
-  str = strtok(str, WS);
-  rc_argv[0] = strdup("/bin/");
-  strcat(rc_argv[0], str);
-  int t_idx = 1;
-  while ((str = strtok(NULL, WS)) != NULL) {
-    rc_argv[t_idx] = strdup(str);
-    ++t_idx;
-  }
-  rc_argv[t_idx] = NULL;
-  print_args(rc_argv);
+void exec_cmd(char **tokens) {
+  //print_args(tokens);
   int rc = fork();
   if (rc == 0) {
     // child
-    execvp(rc_argv[0], rc_argv);
+    int i;
+    char *redir_ptr = NULL;
+    for (i = 0; tokens[i] != NULL; ++i) {
+      //printf("%s\n", tokens[i]);
+      if ((redir_ptr = strstr(tokens[i], ">"))) {
+	//printf("redirecting to...\n");
+	break;
+      }
+    } 
+    if (redir_ptr) {
+      //printf("redorecting ...\n");
+      char *output;
+      if (strlen(redir_ptr) == 1) {
+	output = tokens[i+1];
+      } else {
+	output = redir_ptr + 1;
+      }
+      close(STDOUT_FILENO);
+      open(output, O_CREAT | O_WRONLY | O_TRUNC | S_IRWXU);
+      tokens[i] = NULL;
+    }
+    execvp(tokens[0], tokens);
     perror("Exec failure.\n");
     bin_exit();
   } else if (rc > 0) {
     // parent
     wait(NULL);
-    printf("Parent process: %d\n", (int) getpid());
+    //printf("Parent process: %d\n", (int) getpid());
   } else {
     // failure
-    perror("Fork failure.\n");
+    //perror("Fork failure.\n");
   }
 }
 
 void bin_history() {
-  int i;
-  for (i = 0; i < his_num; ++i) {
-    printf("%d %s", i + 1, his_list[(oldest_idx + i) % HISTORY_POOL_SIZE]);
+  int i = his_num > HIS_POOL_SIZE ? (his_num - HIS_POOL_SIZE + 1) : 1;
+  for (; i <= his_num; ++i) {
+    printf("%d %s", i, his_list[(i - 1) % HIS_POOL_SIZE]);
   }
 }
 
-// Note that the current cmd is added after a history cmd is copied to 'str'.
-void run_his_cmd(char *str, int *flag) {
-  assert(str[0] == '!');
+// TODO(byan23): Make sure Check mode ensures that nothing else than whitespace
+// appears before '!'.
+// Note that nothing is added to history under this mode, history of the
+// corresponding cmd will be added in the next loop round.
+// 'flag' is passed in as to notify the main outer loop whether a history cmd
+// needs to run (false when '!' cmd invalid).
+void run_his_cmd(char* str, char **tokens, int *flag) {
   int idx;
-  printf("Expo cmd: %s\n", str);
-  // 2 because "!\n".
-  if (strlen(str) == 2) {
-    printf("Last history...\n");
-    // Minuses 2 because current '!' cmd is already added into the pool.
-    idx = (oldest_idx + his_num - 1) % HISTORY_POOL_SIZE;
+  //printf("Expo cmd: %s\n", str);
+  if (!tokens[1] && strlen(tokens[0]) == 1) {
+    //printf("Last history...\n");
+    idx = (his_num - 1) % HIS_POOL_SIZE;
   } else {
-    long num = strtol(&str[1], NULL, 10);
-    if (num >= his_num) {
+    long num;
+    if (!tokens[1]) num = strtol(&(tokens[0][1]), NULL, 10);
+    else	    num = strtol(tokens[1], NULL, 10);
+    // history number out of current bound
+    if (num >= his_num || num <= his_num - HIS_POOL_SIZE || num <= 0) {
       write(STDERR_FILENO, error_message, err_len);
       return;  
     } else {
-      idx = (oldest_idx + (int)num - 1) % HISTORY_POOL_SIZE;
+      idx = ((int)num - 1) % HIS_POOL_SIZE;
     }
-    printf("%lu history at index: %d\n", index, idx);
+    //printf("%lu history at index: %d\n", num, idx);
   }
   *flag = 1;
-  char *backup = strdup(str);
   memset(str, 0, MAX_CLINE);
   strcpy(str, his_list[idx]);
-  add_to_history(backup);
+
 }
 
-// It is caller's responsibility to ensure 'str' is NOT null and 'c' is the
-// 1st non-whitespace character.
-int token_num(char *str, char c) {
-  printf("original string: %s\n", str);
-  assert(str != NULL);
-  char *p = strchr(str, c);
-  printf("First non-whitespace character is: %c\n", p[0]);
-  printf("local string: %s\n", p);
-  int count = 1;  // 'str' is already pointing at the beginning of 1st token
-  ++p;
-  while (!(p = strchr(p, ' '))) {
-    ++p;
-    ++count;
+// Returns NULL if empty/whitespace str.vtokenize(const char *str) {
+char **tokenize(const char *str) {
+  // work on a copy of 'str'
+  char copy[strlen(str) + 1];
+  strcpy(copy, str);
+  char *c;
+  char **result = (char**) malloc (MAX_TOKEN * sizeof(char*));
+  if (!(c = strtok(copy, WS))) return NULL;
+  result[0] = strdup(c);
+  int i;
+  for (i = 1; (c = strtok(NULL, WS)) != NULL; ++i) {
+    result[i] = strdup(c);
   }
-  return count;
+  result[i] = NULL;
+  return result;
 }
 
 void add_to_history(const char *str) {
-  if (his_num < HISTORY_POOL_SIZE) {
+  ++his_num;
+  if (his_num <= HIS_POOL_SIZE) {
     // Appends new cmd at the end of history array.
-    printf("History pool is not full yet.\n");
-    his_list[his_num++] = strdup(str);
-    /* oldest_idx stay at 0 */
+    //printf("History pool is not full yet.\n");
+    his_list[his_num - 1] = strdup(str);
+    /* oldest stays at 0 */
   } else {
-    strcpy(his_list[oldest_idx], str);
-    oldest_idx = (oldest_idx + 1) % HISTORY_POOL_SIZE;
+    int idx = (his_num - 1) % HIS_POOL_SIZE;
+    free(his_list[idx]);
+    his_list[idx] = strdup(str);
   }
 }
 
-void print_args(char *args[]) {
+void print_args(char **args) {
   int i;
   printf("Printing args:");
   for (i = 0; args[i] != NULL; ++i) {
     printf(" %s", args[i]);
   }
-  //printf("\n");
+  printf("\n");
 }
 
-CMD_MODE get_mode(const char *s) {
+CMD_MODE get_mode(char **tokens) {
   // Works on a copy, since strtok changes the original string.
-  printf("Getting mode...\n");
-  char str[strlen(s) + 1];
-  strcpy(str, s);
-  printf("made a copy...\n");
+  //printf("Getting mode...\n");
+  if (!tokens) return NULL_MODE;  // empty cmd
+  //print_args(tokens);
   char *p;
-  if ((p = strstr(str, ">"))) {
-    printf("command needs redirection...\n");
-    // can only have one '>'.
-    if (strchr(++p, '>')) return SYN_ERR;
-    // Checks if more than 1 arg appear after '>'.
-    char str_cpy[strlen(str) + 1];
-    strcpy(str_cpy, str);
-    char *start = strchr(str_cpy, '>');
-    start = strtok(++start, WS);
-    if (strtok(NULL, WS)) {
-      printf("Invalid command: %s\n", str);
-      return SYN_ERR;
+  int i;
+  int has_redir = 0;
+  for (i = 0; tokens[i] != NULL; ++i){
+    if ((p = strstr(tokens[i], ">"))) {
+      // printf("command needs redirection...\n");
+      // can only have one '>'.
+      if (has_redir || strchr(++p, '>')) return SYN_ERR;
+      has_redir = 1;
     }
   }
-  p = strtok(str, WS);
-  printf("1st token: %s\n", p);
-  if (!p) return NULL_MODE;	// empty command
+  p = tokens[0];
+  //printf("1st token: %s\n", p);
   if (p[0] == '>') {
     return SYN_ERR;
   } else if (p[0] == '!') {
     char *pleft;
-    long temp = strtol(&p[1], &pleft, 10);
-    printf("Use it since you are not happy...%lu\n", temp);
-    if (p[1] == '\0' || *pleft == '\0') return RUN_HISTORY_MODE;
+    strtol(&p[1], &pleft, 10);
+    //printf("Use it since you are not happy...%lu\n", temp);
+    if (p[1] == '\0' || *pleft == '\0') return RUN_HIS_MODE;
     else return SYN_ERR;
   } else if (strlen(p) >= 4 && strncmp(p, "exit", 4) == 0) {
-    if (p[4] == '\0' && !strtok(NULL, WS)) return EXIT_MODE;
+    if (p[4] == '\0' && tokens[1] == NULL) return EXIT_MODE;
     else return SYN_ERR;
   } else if (strlen(p) >= 7 && strncmp(p, "history", 7) == 0) {
-    if (p[7] == '\0' && !strtok(NULL, WS)) return HISTORY_MODE;
+    if (p[7] == '\0' && tokens[1] == NULL) return HIS_MODE;
     else return SYN_ERR;
   } else {
-    printf("built-in mode\n");
+    //printf("built-in mode\n");
     return RUN_BIN_MODE;
   }
 }

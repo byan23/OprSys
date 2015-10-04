@@ -9,7 +9,8 @@
 #include <fcntl.h>
 #include <limits.h>
 
-#define MAX_CLINE 512
+#define MAX_CLINE 513
+#define MAX_BUFFER MAX_CLINE + 5
 // whitespace
 #define WS " \n\t"
 // TODO(byan23): Maybe add reallocation for cases larger than MAX_TOKEN or
@@ -56,12 +57,18 @@ CMD_MODE get_mode(char **tokens);
 // batch file stream is set to NULL, and thus jumps out of batch mode.
 int main(int argc, char *argv[]) {
   //printf("# of args: %d\n", argc); 
-  char rc_str[MAX_CLINE];
+  if (argc > 2) {
+    //perror("argc err\n");
+    write(STDERR_FILENO, error_message, err_len);
+    exit(1);
+  }
+  char rc_str[MAX_BUFFER];
   int his_argv = 0;
   FILE *fs = stdin;
   if (argc == 2) {
     fs = fopen(argv[1], "r");
     if (!fs) {
+      //perror("fopen err\n");
       write(STDERR_FILENO, error_message, err_len);
       exit(1);
     }
@@ -69,11 +76,23 @@ int main(int argc, char *argv[]) {
   while (1) {
     // In run_his_mode, don't get new cmd from input.
     if (!his_argv) {
-      memset(rc_str, 0, MAX_CLINE);
+      memset(rc_str, 0, MAX_BUFFER);
       if (fs == stdin) printf("mysh # ");
-      if (!fgets(rc_str, MAX_CLINE, fs)) {
+      // 1 for '\0', 1 for length overflow.
+      if (!fgets(rc_str, MAX_BUFFER, fs)) {
 	fclose(fs);
-	fs = stdin;
+	exit(0);
+      }
+      if (strlen(rc_str) > MAX_CLINE) {
+	//char err[10];
+	//sprintf(err, "%d", (int)strlen(rc_str));
+	write(STDERR_FILENO, error_message, err_len);
+	rc_str[MAX_CLINE - 1] = '\0';
+	write(STDOUT_FILENO, rc_str, strlen(rc_str));
+	write(STDOUT_FILENO, "\n", 1);
+	while (rc_str[strlen(rc_str) - 1] != '\n') {
+	  fgets(rc_str, MAX_BUFFER, fs);
+	}
 	continue;
       }
       if (fs != stdin) write(STDOUT_FILENO, rc_str, strlen(rc_str));
@@ -81,11 +100,12 @@ int main(int argc, char *argv[]) {
     his_argv = 0;
     // Switch mode.
     char **tokens = tokenize(rc_str);
+    //print_args(tokens);
     CMD_MODE mode = get_mode(tokens);
     // printf("Got mode: %d\n", mode); 
     if (mode != NULL_MODE) {
       if (mode == SYN_ERR) {
-	//printf("Syntax error!\n");
+	//perror("Syntax error!\n");
 	write(STDERR_FILENO, error_message, err_len);
       } else {
 	// Adds to history.
@@ -105,7 +125,7 @@ int main(int argc, char *argv[]) {
 	      run_his_cmd(rc_str, tokens, &his_argv);
 	      break;
 	    case RUN_BIN_MODE:
-	      //printf("I just parse and pass...\n");
+	      printf("I just parse and pass...\n");
 	      exec_cmd(tokens);
 	      break;
 	    default:
@@ -147,11 +167,17 @@ void exec_cmd(char **tokens) {
 	output = redir_ptr + 1;
       }
       close(STDOUT_FILENO);
-      open(output, O_CREAT | O_WRONLY | O_TRUNC | S_IRWXU);
+      int fd = open(output, O_CREAT | O_WRONLY | O_TRUNC | S_IRWXU);
+      if (fd < 0) {
+	perror("file open err\n");
+	write(STDERR_FILENO, error_message, err_len);
+	return;
+      }
       tokens[i] = NULL;
     }
     execvp(tokens[0], tokens);
-    perror("Exec failure.\n");
+    //perror("exec err\n");
+    write(STDERR_FILENO, error_message, err_len);
     bin_exit();
   } else if (rc > 0) {
     // parent
@@ -159,14 +185,16 @@ void exec_cmd(char **tokens) {
     //printf("Parent process: %d\n", (int) getpid());
   } else {
     // failure
-    //perror("Fork failure.\n");
+    //write(STDERR_FILENO, error_message, err_len);
   }
 }
 
 void bin_history() {
   int i = his_num > HIS_POOL_SIZE ? (his_num - HIS_POOL_SIZE + 1) : 1;
+  char buffer[MAX_CLINE];
   for (; i <= his_num; ++i) {
-    printf("%d %s", i, his_list[(i - 1) % HIS_POOL_SIZE]);
+    sprintf(buffer, "%d %s", i, his_list[(i - 1) % HIS_POOL_SIZE]);
+    write(STDOUT_FILENO, buffer, strlen(buffer));
   }
 }
 
@@ -188,6 +216,7 @@ void run_his_cmd(char* str, char **tokens, int *flag) {
     else	    num = strtol(tokens[1], NULL, 10);
     // history number out of current bound
     if (num >= his_num || num <= his_num - HIS_POOL_SIZE || num <= 0) {
+      //perror("out of bounds err\n");
       write(STDERR_FILENO, error_message, err_len);
       return;  
     } else {
@@ -196,9 +225,8 @@ void run_his_cmd(char* str, char **tokens, int *flag) {
     //printf("%lu history at index: %d\n", num, idx);
   }
   *flag = 1;
-  memset(str, 0, MAX_CLINE);
+  memset(str, 0, MAX_BUFFER);
   strcpy(str, his_list[idx]);
-
 }
 
 // Returns NULL if empty/whitespace str.vtokenize(const char *str) {
@@ -248,13 +276,18 @@ CMD_MODE get_mode(char **tokens) {
   //print_args(tokens);
   char *p;
   int i;
-  int has_redir = 0;
   for (i = 0; tokens[i] != NULL; ++i){
-    if ((p = strstr(tokens[i], ">"))) {
+    if ((p = strchr(tokens[i], '>'))) {
       // printf("command needs redirection...\n");
       // can only have one '>'.
-      if (has_redir || strchr(++p, '>')) return SYN_ERR;
-      has_redir = 1;
+      // can have one or no tokens afterwards
+      if (strlen(p) == 1) {
+	if (!tokens[i+1] || (p = strchr(tokens[i+1], '>')) ||
+	    tokens[i+2]) return SYN_ERR;
+      } else {
+	assert(strlen(p) > 1);
+	if ((p = strchr(++p, '>')) || tokens[i+1]) return SYN_ERR;
+      }
     }
   }
   p = tokens[0];

@@ -90,9 +90,11 @@ int main(int argc, char *argv[]) {
 	rc_str[MAX_CLINE - 1] = '\0';
 	write(STDOUT_FILENO, rc_str, strlen(rc_str));
 	write(STDOUT_FILENO, "\n", 1);
-	while (rc_str[strlen(rc_str) - 1] != '\n') {
+	/*while (rc_str[strlen(rc_str) - 1] != '\n') {
 	  fgets(rc_str, MAX_BUFFER, fs);
+	  printf("%s", rc_str);
 	}
+	printf("\n!!%s", rc_str);*/
 	continue;
       }
       if (fs != stdin) write(STDOUT_FILENO, rc_str, strlen(rc_str));
@@ -125,7 +127,7 @@ int main(int argc, char *argv[]) {
 	      run_his_cmd(rc_str, tokens, &his_argv);
 	      break;
 	    case RUN_BIN_MODE:
-	      printf("I just parse and pass...\n");
+	      //printf("I just parse and pass...\n");
 	      exec_cmd(tokens);
 	      break;
 	    default:
@@ -167,9 +169,9 @@ void exec_cmd(char **tokens) {
 	output = redir_ptr + 1;
       }
       close(STDOUT_FILENO);
-      int fd = open(output, O_CREAT | O_WRONLY | O_TRUNC | S_IRWXU);
+      int fd = open(output, O_CREAT | O_WRONLY | O_TRUNC, S_IRWXU);
       if (fd < 0) {
-	perror("file open err\n");
+	//perror("file open err\n");
 	write(STDERR_FILENO, error_message, err_len);
 	return;
       }
@@ -215,7 +217,7 @@ void run_his_cmd(char* str, char **tokens, int *flag) {
     if (!tokens[1]) num = strtol(&(tokens[0][1]), NULL, 10);
     else	    num = strtol(tokens[1], NULL, 10);
     // history number out of current bound
-    if (num >= his_num || num <= his_num - HIS_POOL_SIZE || num <= 0) {
+    if (num > his_num || num < his_num - HIS_POOL_SIZE + 1 || num <= 0) {
       //perror("out of bounds err\n");
       write(STDERR_FILENO, error_message, err_len);
       return;  
@@ -298,8 +300,11 @@ CMD_MODE get_mode(char **tokens) {
     char *pleft;
     strtol(&p[1], &pleft, 10);
     //printf("Use it since you are not happy...%lu\n", temp);
-    if (p[1] == '\0' || *pleft == '\0') return RUN_HIS_MODE;
-    else return SYN_ERR;
+    if ((p[1] == '\0' || *pleft == '\0') && !tokens[1]) {
+      return RUN_HIS_MODE;
+    } else {
+      return SYN_ERR;
+    }
   } else if (strlen(p) >= 4 && strncmp(p, "exit", 4) == 0) {
     if (p[4] == '\0' && tokens[1] == NULL) return EXIT_MODE;
     else return SYN_ERR;

@@ -28,7 +28,7 @@ Test basic
 run a single command with no arguments
 
 **********************************************************************
-/tmp/tmpLOQrdT/p/./mysh /u/c/s/cs537-1/ta/tests/2a/basic/in
+/tmp/tmpv5_dPx/p/./mysh /u/c/s/cs537-1/ta/tests/2a/basic/in
 
 
 test basic PASSED
@@ -42,7 +42,7 @@ Test blank
 an empty batch file
 
 **********************************************************************
-/tmp/tmpLOQrdT/p/./mysh /u/c/s/cs537-1/ta/tests/2a/blank/in
+/tmp/tmpv5_dPx/p/./mysh /u/c/s/cs537-1/ta/tests/2a/blank/in
 
 
 test blank PASSED
@@ -56,7 +56,7 @@ Test parseargs
 a command with an argument
 
 **********************************************************************
-/tmp/tmpLOQrdT/p/./mysh /u/c/s/cs537-1/ta/tests/2a/parseargs/in
+/tmp/tmpv5_dPx/p/./mysh /u/c/s/cs537-1/ta/tests/2a/parseargs/in
 
 
 test parseargs PASSED
@@ -70,7 +70,7 @@ Test parseargs2
 a command with many arguments
 
 **********************************************************************
-/tmp/tmpLOQrdT/p/./mysh /u/c/s/cs537-1/ta/tests/2a/parseargs2/in
+/tmp/tmpv5_dPx/p/./mysh /u/c/s/cs537-1/ta/tests/2a/parseargs2/in
 
 
 test parseargs2 PASSED
@@ -84,7 +84,7 @@ Test exit
 the builtin exit command
 
 **********************************************************************
-/tmp/tmpLOQrdT/p/./mysh /u/c/s/cs537-1/ta/tests/2a/exit/in
+/tmp/tmpv5_dPx/p/./mysh /u/c/s/cs537-1/ta/tests/2a/exit/in
 
 
 test exit PASSED
@@ -98,7 +98,7 @@ Test whitespace
 serveral commands with extra whitespace
 
 **********************************************************************
-/tmp/tmpLOQrdT/p/./mysh /u/c/s/cs537-1/ta/tests/2a/whitespace/in
+/tmp/tmpv5_dPx/p/./mysh /u/c/s/cs537-1/ta/tests/2a/whitespace/in
 
 
 test whitespace PASSED
@@ -112,7 +112,7 @@ Test args
 too many arguments to mysh
 
 **********************************************************************
-/tmp/tmpLOQrdT/p/./mysh /u/c/s/cs537-1/ta/tests/2a/args/in /bogus
+/tmp/tmpv5_dPx/p/./mysh /u/c/s/cs537-1/ta/tests/2a/args/in /bogus
 
 
 test args PASSED
@@ -126,7 +126,7 @@ Test args2
 invalid batch file path
 
 **********************************************************************
-/tmp/tmpLOQrdT/p/./mysh /bogus
+/tmp/tmpv5_dPx/p/./mysh /bogus
 
 
 test args2 PASSED
@@ -140,7 +140,7 @@ Test longline
 maximum length line
 
 **********************************************************************
-/tmp/tmpLOQrdT/p/./mysh /u/c/s/cs537-1/ta/tests/2a/longline/in
+/tmp/tmpv5_dPx/p/./mysh /u/c/s/cs537-1/ta/tests/2a/longline/in
 
 
 test longline PASSED
@@ -154,15 +154,11 @@ Test toolong
 a line that is too long
 
 **********************************************************************
-/tmp/tmpLOQrdT/p/./mysh /u/c/s/cs537-1/ta/tests/2a/toolong/in
-Failure: ./mysh gave incorrect standard output.
-Expected: "echo 000011111111112222222222333333333344444444445555555555666666666677777777778888888888999999999900000000001111111111222222222233333333334444444444555555555566666666667777777777888888888899999999990000000000111111111122222222223333333333444444444455555555556666666666777777777788888888889999999999000000000011111111112222222222333333333344444444445555555555666666666677777777778888888888999999999900000000001111111111222222222233333333334444444444555555555566666666667777777777888888888899999999990000000000051\nuname\nLinux\n"
-Got:      "echo 000011111111112222222222333333333344444444445555555555666666666677777777778888888888999999999900000000001111111111222222222233333333334444444444555555555566666666667777777777888888888899999999990000000000111111111122222222223333333333444444444455555555556666666666777777777788888888889999999999000000000011111111112222222222333333333344444444445555555555666666666677777777778888888888999999999900000000001111111111222222222233333333334444444444555555555566666666667777777777888888888899999999990000000000051"
+/tmp/tmpv5_dPx/p/./mysh /u/c/s/cs537-1/ta/tests/2a/toolong/in
 
 
-test toolong FAILED
+test toolong PASSED
  (a line that is too long)
- ./mysh gave incorrect standard output.
 
 starting badprog
 
@@ -172,7 +168,7 @@ Test badprog
 bad executable path as command
 
 **********************************************************************
-/tmp/tmpLOQrdT/p/./mysh /u/c/s/cs537-1/ta/tests/2a/badprog/in
+/tmp/tmpv5_dPx/p/./mysh /u/c/s/cs537-1/ta/tests/2a/badprog/in
 
 
 test badprog PASSED
@@ -186,7 +182,7 @@ Test errout
 a called program produces error output, but no errors from the shell itself
 
 **********************************************************************
-/tmp/tmpLOQrdT/p/./mysh /u/c/s/cs537-1/ta/tests/2a/errout/in
+/tmp/tmpv5_dPx/p/./mysh /u/c/s/cs537-1/ta/tests/2a/errout/in
 
 
 test errout PASSED
@@ -200,7 +196,7 @@ Test badexit
 invalid arguments to exit
 
 **********************************************************************
-/tmp/tmpLOQrdT/p/./mysh /u/c/s/cs537-1/ta/tests/2a/badexit/in
+/tmp/tmpv5_dPx/p/./mysh /u/c/s/cs537-1/ta/tests/2a/badexit/in
 
 
 test badexit PASSED
@@ -214,7 +210,7 @@ Test basic_hist
 access to an index older than last 20 entries
 
 **********************************************************************
-/tmp/tmpLOQrdT/p/./mysh /u/c/s/cs537-1/ta/tests/2a/basic_hist/in
+/tmp/tmpv5_dPx/p/./mysh /u/c/s/cs537-1/ta/tests/2a/basic_hist/in
 
 
 test basic_hist PASSED
@@ -228,7 +224,7 @@ Test extraargs_exclaim
 passing extra args to !
 
 **********************************************************************
-/tmp/tmpLOQrdT/p/./mysh /u/c/s/cs537-1/ta/tests/2a/extraargs_exclaim/in
+/tmp/tmpv5_dPx/p/./mysh /u/c/s/cs537-1/ta/tests/2a/extraargs_exclaim/in
 
 
 test extraargs_exclaim PASSED
@@ -242,7 +238,7 @@ Test extraargs_hist
 passing extra args to history
 
 **********************************************************************
-/tmp/tmpLOQrdT/p/./mysh /u/c/s/cs537-1/ta/tests/2a/extraargs_hist/in
+/tmp/tmpv5_dPx/p/./mysh /u/c/s/cs537-1/ta/tests/2a/extraargs_hist/in
 
 
 test extraargs_hist PASSED
@@ -256,7 +252,7 @@ Test hist1
 check if the first command in history can be executed using !, if !1 is the 21st command
 
 **********************************************************************
-/tmp/tmpLOQrdT/p/./mysh /u/c/s/cs537-1/ta/tests/2a/hist1/in
+/tmp/tmpv5_dPx/p/./mysh /u/c/s/cs537-1/ta/tests/2a/hist1/in
 
 
 test hist1 PASSED
@@ -270,7 +266,7 @@ Test hist2
 display last 20 commands including history
 
 **********************************************************************
-/tmp/tmpLOQrdT/p/./mysh /u/c/s/cs537-1/ta/tests/2a/hist2/in
+/tmp/tmpv5_dPx/p/./mysh /u/c/s/cs537-1/ta/tests/2a/hist2/in
 
 
 test hist2 PASSED
@@ -284,7 +280,7 @@ Test hist3
 invalid index in !
 
 **********************************************************************
-/tmp/tmpLOQrdT/p/./mysh /u/c/s/cs537-1/ta/tests/2a/hist3/in
+/tmp/tmpv5_dPx/p/./mysh /u/c/s/cs537-1/ta/tests/2a/hist3/in
 
 
 test hist3 PASSED
@@ -298,7 +294,7 @@ Test invalid_arg
 invalid arg to ls
 
 **********************************************************************
-/tmp/tmpLOQrdT/p/./mysh /u/c/s/cs537-1/ta/tests/2a/invalid_arg/in
+/tmp/tmpv5_dPx/p/./mysh /u/c/s/cs537-1/ta/tests/2a/invalid_arg/in
 
 
 test invalid_arg PASSED
@@ -312,7 +308,7 @@ Test randin
 random input xyz
 
 **********************************************************************
-/tmp/tmpLOQrdT/p/./mysh /u/c/s/cs537-1/ta/tests/2a/randin/in
+/tmp/tmpv5_dPx/p/./mysh /u/c/s/cs537-1/ta/tests/2a/randin/in
 
 
 test randin PASSED
@@ -326,15 +322,11 @@ Test redir_hist
 to check if the redirection in a history command is taken care of
 
 **********************************************************************
-/tmp/tmpLOQrdT/p/./mysh /u/c/s/cs537-1/ta/tests/2a/redir_hist/in
-Failure: ./mysh gave incorrect standard error.
-Expected: ""
-Got:      "An error has occurred\n"
+/tmp/tmpv5_dPx/p/./mysh /u/c/s/cs537-1/ta/tests/2a/redir_hist/in
 
 
-test redir_hist FAILED
+test redir_hist PASSED
  (to check if the redirection in a history command is taken care of)
- ./mysh gave incorrect standard error.
 
 starting valid_hist
 
@@ -344,7 +336,7 @@ Test valid_hist
 to check if the commands entered in history have correct syntax
 
 **********************************************************************
-/tmp/tmpLOQrdT/p/./mysh /u/c/s/cs537-1/ta/tests/2a/valid_hist/in
+/tmp/tmpv5_dPx/p/./mysh /u/c/s/cs537-1/ta/tests/2a/valid_hist/in
 
 
 test valid_hist PASSED
@@ -358,7 +350,7 @@ Test wrong_redir
 to check if there is a wrong use of redirection mkdir > 1.txt
 
 **********************************************************************
-/tmp/tmpLOQrdT/p/./mysh /u/c/s/cs537-1/ta/tests/2a/wrong_redir/in
+/tmp/tmpv5_dPx/p/./mysh /u/c/s/cs537-1/ta/tests/2a/wrong_redir/in
 
 
 test wrong_redir PASSED
@@ -372,7 +364,7 @@ Test redirect
 simple redirection using >
 
 **********************************************************************
-/tmp/tmpLOQrdT/p/./mysh /u/c/s/cs537-1/ta/tests/2a/redirect/in
+/tmp/tmpv5_dPx/p/./mysh /u/c/s/cs537-1/ta/tests/2a/redirect/in
 
 
 test redirect PASSED
@@ -386,15 +378,11 @@ Test redirect2
 redirection and mutiple arguments
 
 **********************************************************************
-/tmp/tmpLOQrdT/p/./mysh /u/c/s/cs537-1/ta/tests/2a/redirect2/in
-Failure: ./mysh gave incorrect standard error.
-Expected: ""
-Got:      "An error has occurred\n"
+/tmp/tmpv5_dPx/p/./mysh /u/c/s/cs537-1/ta/tests/2a/redirect2/in
 
 
-test redirect2 FAILED
+test redirect2 PASSED
  (redirection and mutiple arguments)
- ./mysh gave incorrect standard error.
 
 starting badredir
 
@@ -404,7 +392,7 @@ Test badredir
 redirect to invalid path
 
 **********************************************************************
-/tmp/tmpLOQrdT/p/./mysh /u/c/s/cs537-1/ta/tests/2a/badredir/in
+/tmp/tmpv5_dPx/p/./mysh /u/c/s/cs537-1/ta/tests/2a/badredir/in
 
 
 test badredir PASSED
@@ -418,7 +406,7 @@ Test badredir2
 redirect to multiple paths
 
 **********************************************************************
-/tmp/tmpLOQrdT/p/./mysh /u/c/s/cs537-1/ta/tests/2a/badredir2/in
+/tmp/tmpv5_dPx/p/./mysh /u/c/s/cs537-1/ta/tests/2a/badredir2/in
 
 
 test badredir2 PASSED
@@ -456,9 +444,8 @@ test args2 PASSED
 test longline PASSED
  (maximum length line)
 
-test toolong FAILED
+test toolong PASSED
  (a line that is too long)
- ./mysh gave incorrect standard output.
 
 test badprog PASSED
  (bad executable path as command)
@@ -493,9 +480,8 @@ test invalid_arg PASSED
 test randin PASSED
  (random input xyz)
 
-test redir_hist FAILED
+test redir_hist PASSED
  (to check if the redirection in a history command is taken care of)
- ./mysh gave incorrect standard error.
 
 test valid_hist PASSED
  (to check if the commands entered in history have correct syntax)
@@ -506,9 +492,8 @@ test wrong_redir PASSED
 test redirect PASSED
  (simple redirection using >)
 
-test redirect2 FAILED
+test redirect2 PASSED
  (redirection and mutiple arguments)
- ./mysh gave incorrect standard error.
 
 test badredir PASSED
  (redirect to invalid path)
@@ -516,5 +501,5 @@ test badredir PASSED
 test badredir2 PASSED
  (redirect to multiple paths)
 
-Passed 26 of 29 tests.
-Overall 26 of 29
+Passed 29 of 29 tests.
+Overall 29 of 29

@@ -1,3 +1,4 @@
+#P2A
 TODO:
 1. Run built-in command if it is.
 2. Implement 2 build-in commands: exit & history
@@ -5,3 +6,25 @@ TODO:
 NOTE:
 File descriptor:
   stdin: 0; stdout: 1; stderr: 2
+
+QUESTION:
+what if batch files open failed?
+
+ERROR:
+too many args to mysh
+invalid batch files
+longline
+too long return err
+batch file bad executable path
+exec failed err msg
+redirection in hist
+redir and multiple arguments
+bad redir
+
+#P2B
+most stuff in proc.c
+swtch, yield
+proc struct
+
+printf debugger: cprintf() in xv6
+process -> proc struct -> process table

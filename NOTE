@@ -28,3 +28,7 @@ proc struct
 
 printf debugger: cprintf() in xv6
 process -> proc struct -> process table
+
+4 pqueues, 0 high
+
+

@@ -13,6 +13,8 @@
 #define MAX_BUFFER MAX_CLINE + 5
 // whitespace
 #define WS " \n\t"
+// prompt
+#define PROMPT "mysh # "
 // TODO(byan23): Maybe add reallocation for cases larger than MAX_TOKEN or
 // eventially come up with a dynamical way to allocate the mem.
 #define MAX_TOKEN 50
@@ -77,7 +79,7 @@ int main(int argc, char *argv[]) {
     // In run_his_mode, don't get new cmd from input.
     if (!his_argv) {
       memset(rc_str, 0, MAX_BUFFER);
-      if (fs == stdin) printf("mysh # ");
+      if (fs == stdin) write(STDOUT_FILENO, PROMPT, strlen(PROMPT));
       // 1 for '\0', 1 for length overflow.
       if (!fgets(rc_str, MAX_BUFFER, fs)) {
 	fclose(fs);

@@ -17,7 +17,7 @@
 #define PROMPT "mysh # "
 // TODO(byan23): Maybe add reallocation for cases larger than MAX_TOKEN or
 // eventially come up with a dynamical way to allocate the mem.
-#define MAX_TOKEN 50
+#define MAX_TOKEN 30
 #define HIS_POOL_SIZE 20
 
 typedef enum CMD_MODE {
@@ -58,9 +58,7 @@ CMD_MODE get_mode(char **tokens);
 // Note that for batch mode, once it reaches the end of the batch file, the
 // batch file stream is set to NULL, and thus jumps out of batch mode.
 int main(int argc, char *argv[]) {
-  //printf("# of args: %d\n", argc); 
   if (argc > 2) {
-    //perror("argc err\n");
     write(STDERR_FILENO, error_message, err_len);
     exit(1);
   }
@@ -80,23 +78,15 @@ int main(int argc, char *argv[]) {
     if (!his_argv) {
       memset(rc_str, 0, MAX_BUFFER);
       if (fs == stdin) write(STDOUT_FILENO, PROMPT, strlen(PROMPT));
-      // 1 for '\0', 1 for length overflow.
       if (!fgets(rc_str, MAX_BUFFER, fs)) {
 	fclose(fs);
 	exit(0);
       }
       if (strlen(rc_str) > MAX_CLINE) {
-	//char err[10];
-	//sprintf(err, "%d", (int)strlen(rc_str));
 	write(STDERR_FILENO, error_message, err_len);
 	rc_str[MAX_CLINE - 1] = '\0';
 	write(STDOUT_FILENO, rc_str, strlen(rc_str));
 	write(STDOUT_FILENO, "\n", 1);
-	/*while (rc_str[strlen(rc_str) - 1] != '\n') {
-	  fgets(rc_str, MAX_BUFFER, fs);
-	  printf("%s", rc_str);
-	}
-	printf("\n!!%s", rc_str);*/
 	continue;
       }
       if (fs != stdin) write(STDOUT_FILENO, rc_str, strlen(rc_str));
@@ -104,12 +94,9 @@ int main(int argc, char *argv[]) {
     his_argv = 0;
     // Switch mode.
     char **tokens = tokenize(rc_str);
-    //print_args(tokens);
     CMD_MODE mode = get_mode(tokens);
-    // printf("Got mode: %d\n", mode); 
     if (mode != NULL_MODE) {
       if (mode == SYN_ERR) {
-	//perror("Syntax error!\n");
 	write(STDERR_FILENO, error_message, err_len);
       } else {
 	// Adds to history.
@@ -147,7 +134,6 @@ void bin_exit() {
   exit(0);
 }
 
-// TODO(byan23): Dynamically allocate char *argv[].
 void exec_cmd(char **tokens) {
   //print_args(tokens);
   int rc = fork();
@@ -156,7 +142,6 @@ void exec_cmd(char **tokens) {
     int i;
     char *redir_ptr = NULL;
     for (i = 0; tokens[i] != NULL; ++i) {
-      //printf("%s\n", tokens[i]);
       if ((redir_ptr = strstr(tokens[i], ">"))) {
 	//printf("redirecting to...\n");
 	break;
@@ -186,7 +171,6 @@ void exec_cmd(char **tokens) {
   } else if (rc > 0) {
     // parent
     wait(NULL);
-    //printf("Parent process: %d\n", (int) getpid());
   } else {
     // failure
     //write(STDERR_FILENO, error_message, err_len);
@@ -202,8 +186,6 @@ void bin_history() {
   }
 }
 
-// TODO(byan23): Make sure Check mode ensures that nothing else than whitespace
-// appears before '!'.
 // Note that nothing is added to history under this mode, history of the
 // corresponding cmd will be added in the next loop round.
 // 'flag' is passed in as to notify the main outer loop whether a history cmd
@@ -220,7 +202,6 @@ void run_his_cmd(char* str, char **tokens, int *flag) {
     else	    num = strtol(tokens[1], NULL, 10);
     // history number out of current bound
     if (num > his_num || num < his_num - HIS_POOL_SIZE + 1 || num <= 0) {
-      //perror("out of bounds err\n");
       write(STDERR_FILENO, error_message, err_len);
       return;  
     } else {
@@ -233,7 +214,7 @@ void run_his_cmd(char* str, char **tokens, int *flag) {
   strcpy(str, his_list[idx]);
 }
 
-// Returns NULL if empty/whitespace str.vtokenize(const char *str) {
+// Returns NULL if empty/whitespace str.
 char **tokenize(const char *str) {
   // work on a copy of 'str'
   char copy[strlen(str) + 1];
@@ -243,7 +224,15 @@ char **tokenize(const char *str) {
   if (!(c = strtok(copy, WS))) return NULL;
   result[0] = strdup(c);
   int i;
+  int cur_max_token = MAX_TOKEN;
   for (i = 1; (c = strtok(NULL, WS)) != NULL; ++i) {
+    if (i + 1 >= cur_max_token) {
+      cur_max_token += 5;
+      char **temp;
+      if (!(temp = realloc (result, cur_max_token * sizeof(char*))))
+	perror("Reallocation error... this is not to be expected...\n");
+      result = temp;
+    }
     result[i] = strdup(c);
   }
   result[i] = NULL;

@@ -1,0 +1,8 @@
+total 48
+-rw-rw-r-- 1 boqun boqun   139 Oct  3 16:08 Makefile
+-rwxrwxr-x 1 boqun boqun 13572 Oct  7 13:25 mysh
+-rw-rw-r-- 1 boqun boqun  8452 Oct  7 13:25 mysh.c
+-rw-rw-r-- 1 boqun boqun  9264 Oct  7 13:25 mysh.o
+-rwx------ 1 boqun boqun     0 Oct  7 13:26 out.txt
+-rw-rw-r-- 1 boqun boqun 12662 Oct  7 13:25 runtests.log
+-rw-rw-r-- 1 boqun boqun    34 Oct  4 14:11 small_batch

@@ -1,0 +1,7 @@
+# CS537 P2A
+# Author: Boqun YAN (cs: boqun	wisc: byan23)
+#	  Yizhe Qu  (cs: qu	wisc: qu23)
+
+P2A:
+1. Implemented a shell with history, "!", exit and output redirection supported. 
+2. It's a quite robust one (at least we think it is ...).

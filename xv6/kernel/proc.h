@@ -76,13 +76,16 @@ struct proc {
   char name[16];               // Process name (debugging)
 };
 
-// Priority queues for scheduler, last element stores the last proc idx.
+// TODO(byan23): Modify the comments below...
+// Priority queues for scheduler, storing the slot no of the process.
+// First element as the head of queue.
+// Last element stores the last proc idx.
 // e.g.
 //  for 1 queue:  
-//	    +----------------------------------------------+
-//	    | pid 0 | pid 1 | ... | pid n | void | ... | n |
-//	    +----------------------------------------------+
-int prqueue[4][NPROC + 1];
+//    +------------------------------------------------------+
+//    | ... | head | ... | ... | tail | void | ... | idx t+1 |
+//    +------------------------------------------------------+
+int priqueue[4][NPROC + 1];
 
 // Process memory is laid out contiguously, low addresses first:
 //   text

@@ -8,6 +8,7 @@ USER_PROGS := \
 	init\
 	kill\
 	ln\
+	getpinfo\
 	ls\
 	mkdir\
 	rm\

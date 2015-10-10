@@ -57,7 +57,6 @@ mainc(void)
   if(!ismp)
     timerinit();   // uniprocessor timer
   bootothers();    // start other processors
-
   // Finish setting up this processor in
   cinit();
   sti();           // enable inturrupts
@@ -102,7 +101,6 @@ bootothers(void)
   // _binary_bootother_start.
   code = (uchar*)0x7000;
   memmove(code, _binary_bootother_start, (uint)_binary_bootother_size);
-
   for(c = cpus; c < cpus+ncpu; c++){
     if(c == cpus+cpunum())  // We've started already.
       continue;

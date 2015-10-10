@@ -74,6 +74,7 @@ struct proc {
   struct file *ofile[NOFILE];  // Open files
   struct inode *cwd;           // Current directory
   char name[16];               // Process name (debugging)
+  struct proc *next;	       // Ptr of the next process in the pri-queue
 };
 
 // TODO(byan23): Modify the comments below...
@@ -85,7 +86,7 @@ struct proc {
 //    +------------------------------------------------------+
 //    | ... | head | ... | ... | tail | void | ... | idx t+1 |
 //    +------------------------------------------------------+
-int priqueue[4][NPROC + 1];
+//int priqueue[4][NPROC + 1];
 
 // Process memory is laid out contiguously, low addresses first:
 //   text

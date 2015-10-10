@@ -19,18 +19,116 @@ extern void forkret(void);
 extern void trapret(void);
 
 struct pstat proc_stat;
-extern int prqueue[4][NPROC + 1];
+// Headers of each priority queue
+struct proc *q0_head = NULL;
+struct proc *q0_tail = NULL;
+struct proc *q1_head = NULL;
+struct proc *q1_tail = NULL;
+struct proc *q2_head = NULL;
+struct proc *q2_tail = NULL;
+struct proc *q3_head = NULL;
+struct proc *q3_tail = NULL;
 
 static void wakeup1(void *chan);
 
-  void
+// helper functions for queues
+static void dump_queues();
+static void dump_queue(struct proc *head);
+static void move_to_front(struct proc **head, struct proc **tail,
+			  struct proc *target);
+static void append_to_queue(struct proc **head, struct proc **tail,
+			    struct proc *target);
+static void remove_from_queue(struct proc **head, struct proc **tail,
+			      struct proc *target);
+inline int tick_bounds(int n);
+
+static void dump_queues() {
+  cprintf("queue 0: \n");
+  dump_queue(q0_head);
+  cprintf("queue 1: \n");
+  dump_queue(q1_head);
+  cprintf("queue 2: \n");
+  dump_queue(q2_head);
+  cprintf("queue 3: \n");
+  dump_queue(q3_head);
+}
+
+static void dump_queue(struct proc *head) {
+  for (; head != NULL; head = head->next)
+    cprintf("%d ", head->pid);
+  cprintf("\n");
+}
+
+static void move_to_front(struct proc **head, struct proc **tail,
+			  struct proc *target) {
+  cprintf("move to front.\n");
+  if (!(*head)) cprintf("head is null.\n");
+  if (!target) cprintf("can't find target.\n");
+  if (*head == target) {
+    cprintf("Already at the front.\n"); 
+    return;
+  }
+  struct proc *p = *head;
+  while (p->next != target) {
+    p = p->next;
+  }
+  p->next = target->next;
+  if (target == *tail) *tail = p;
+  target->next = *head;
+  *head = target;
+  dump_queues();
+}
+
+static void append_to_queue(struct proc **head, struct proc **tail,
+			    struct proc *target) {
+  cprintf("pid: %d append to end.\n", target->pid);
+  if (!target) cprintf("can't find target.\n");
+  if (!(*head)) {	// queue is empty
+    *head = *tail = target;
+    (*tail)->next = NULL;
+  } else {
+    cprintf("tail: %d\n", (*tail)->pid);
+    (*tail)->next = target;
+    *tail = target;
+    (*tail)->next = NULL;
+  }
+  dump_queues();
+}
+
+static void remove_from_queue(struct proc **head, struct proc **tail,
+			      struct proc *target) {
+  cprintf("remove...\n");
+  if (!target) cprintf("can't find target.\n");
+  if (*head == target) {
+    if (*head == *tail) {
+      *tail = NULL;
+    }
+    *head = target->next;
+    dump_queues();
+    cprintf("tail: %d.\n", (*tail)->pid);
+    return;
+  }
+  struct proc *p;
+  for (p = *head; p != NULL; p = p->next) {
+    if (p->next == target) {
+      cprintf("Found the target.\n");
+      break;
+    } 
+  }
+  p->next = target->next;
+  if (*tail == target) *tail = p;
+  dump_queues(); 
+  cprintf("tail: %d.\n", (*tail)->pid);
+}
+
+void
 pinit(void)
 {
   initlock(&ptable.lock, "ptable");
 }
 
 // helper functions
-inline int pow_of_two(int n) {
+inline int tick_bounds(int n) {
   switch(n) {
     case 0:
       return 1;
@@ -51,9 +149,10 @@ inline int pow_of_two(int n) {
 // If found, change state to EMBRYO and initialize
 // state required to run in the kernel.
 // Otherwise return 0.
-  static struct proc*
+static struct proc*
 allocproc(void)
 {
+  cprintf("allocproc...\n");
   struct proc *p;
   char *sp;
 
@@ -73,10 +172,16 @@ found:
   proc_stat.inuse[slot_idx] = 1;
   proc_stat.pid[slot_idx] = p->pid;
   proc_stat.priority[slot_idx] = 0;
-  cprintf("Before adding to the queue.\n");
+  int i;
+  for (i = 0; i < 4; ++i) {
+    proc_stat.ticks[slot_idx][i] = 0;    
+  }
   // Adds the new process to the priority queue.
-  priqueue[0][priqueue[0][NPROC]] = slot_idx;
-  ++priqueue[0][NPROC];
+  //priqueue[0][priqueue[0][NPROC]] = slot_idx;
+  //++priqueue[0][NPROC];
+  append_to_queue(&q0_head, &q0_tail, p);
+  if (!q0_tail) cprintf("still NULL\n");
+  //cprintf("q0_tail: %d\n", q0_tail->pid);
 
   release(&ptable.lock);
 
@@ -90,7 +195,6 @@ found:
   // Leave room for trap frame.
   sp -= sizeof *p->tf;
   p->tf = (struct trapframe*)sp;
-  cprintf("Before setting up new context.\n");
 
   // Set up new context to start executing at forkret,
   // which returns to trapret.
@@ -107,9 +211,10 @@ found:
 
 // TODO(byan23): Remove the initialization of queues.
 // Set up first user process.
-  void
+void
 userinit(void)
 {
+  //cprintf("User init...\n");
   struct proc *p;
   extern char _binary_initcode_start[], _binary_initcode_size[];
 
@@ -136,14 +241,14 @@ userinit(void)
 
   p->state = RUNNABLE;
   release(&ptable.lock);
-  cprintf("End of userinit.\n");
 }
 
 // Grow current process's memory by n bytes.
 // Return 0 on success, -1 on failure.
-  int
+int
 growproc(int n)
 {
+  //cprintf("grow proc...\n");
   uint sz;
 
   sz = proc->sz;
@@ -162,9 +267,10 @@ growproc(int n)
 // Create a new process copying p as the parent.
 // Sets up stack to return as if from system call.
 // Caller must set state of returned proc to RUNNABLE.
-  int
+int
 fork(void)
 {
+  //cprintf("fork...\n");
   int i, pid;
   struct proc *np;
 
@@ -192,7 +298,7 @@ fork(void)
   np->cwd = idup(proc->cwd);
 
   // TODO(byan23): Delete the below print.
-  cprintf("process: %d\n", np->pid);
+  //cprintf("process: %d\n", np->pid);
 
   pid = np->pid;
   np->state = RUNNABLE;
@@ -200,12 +306,14 @@ fork(void)
   return pid;
 }
 
+// TODO(byan23): Set inuse[] to 0?
 // Exit the current process.  Does not return.
 // An exited process remains in the zombie state
 // until its parent calls wait() to find out it exited.
-  void
+void
 exit(void)
 {
+  cprintf("exit pid: %d.\n", proc->pid);
   struct proc *p;
   int fd;
 
@@ -239,15 +347,40 @@ exit(void)
 
   // Jump into the scheduler, never to return.
   proc->state = ZOMBIE;
+  int slot_no;
+  for (slot_no = 0; slot_no < NPROC; ++slot_no) {
+    if (&ptable.proc[slot_no] == proc)
+      break;
+  }
+  cprintf("found at slot: %d\n", slot_no);
+  int pri = proc_stat.priority[slot_no];
+  switch(pri) {
+    case 0:
+      remove_from_queue(&q0_head, &q0_tail, proc);
+      break;
+    case 1:
+      remove_from_queue(&q1_head, &q1_tail, proc);
+      break;
+    case 2:
+      remove_from_queue(&q2_head, &q2_tail, proc);
+      break;
+    case 3:
+      remove_from_queue(&q3_head, &q3_tail, proc);
+      break;
+    default:
+      cprintf("Wrong priority queue while exiting.\n");
+  }
+  proc_stat.inuse[slot_no] = 0;
   sched();
   panic("zombie exit");
 }
 
 // Wait for a child process to exit and return its pid.
 // Return -1 if this process has no children.
-  int
+int
 wait(void)
 {
+  //cprintf("wait...\n");
   struct proc *p;
   int havekids, pid;
 
@@ -293,10 +426,11 @@ wait(void)
 //  - swtch to start running that process
 //  - eventually that process transfers control
 //      via swtch back to the scheduler.
-  void
+void
 scheduler(void)
 {
-  //struct proc *p;
+  cprintf("scheduler...\n");
+  struct proc *p;
 
   for(;;){
     // Enable interrupts on this processor.
@@ -306,34 +440,49 @@ scheduler(void)
     acquire(&ptable.lock);
     // TODO(byan23): Implement scheduler.
     // Loops over the priority queues (from 0 to 3) looking for process to run.
-    int i, j;
-    for (i = 0; i < 4; ++i) {
-      for (j = 0; j < priqueue[i][NPROC]; ++j) {
-	if (ptable.proc[priqueue[i][j]].state != RUNNABLE) continue;
-	//cprintf("Found a runnable proc.\n");
-	proc = &ptable.proc[priqueue[i][j]];
-	// Switch to chosen process.  It is the process's job
-	// to release ptable.lock and then reacquire it
-	// before jumping back to us.
-	switchuvm(proc);
-	proc->state = RUNNING;
-	swtch(&cpu->scheduler, proc->context);
-	switchkvm();
-
-	// Process is done running for now.
-	// It should have changed its p->state before coming back.
-	proc = 0;
+    //p = q0_head;
+    //if (!q0_head) cprintf("q0_head is null\n");
+    int sched = 0;
+    for (p = q0_head; p != NULL; p = p->next) {
+      if (p->state == RUNNABLE) {
+	//cprintf("found.\n");
+	sched = 1;
+	break;
+      }
+    }
+    if (!sched) {
+      for (p = q1_head; p != NULL; p = p->next) {
+	//cprintf("1 loop\n");
+	if (p->state == RUNNABLE) {
+	  sched = 1;
+	  break;
+	}
+      }
+    }
+    if (!sched) {
+      for (p = q2_head; p != NULL; p = p->next) {
+	//cprintf("2 loop\n");
+	if (p->state == RUNNABLE) {
+	  sched = 1;
+	  break;
+	}
+      }
+    }
+    if (!sched) {
+      for (p = q3_head; p != NULL; p = p->next) {
+	//cprintf("3 loop\n");
+	if (p->state == RUNNABLE) {
+	  sched = 1;
+	  break;
+	}
       }
     }
 
-    // Updates pstat.
-    /*for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
-      if(p->state != RUNNABLE)
-	continue;
-
+    if (sched) {
       // Switch to chosen process.  It is the process's job
       // to release ptable.lock and then reacquire it
       // before jumping back to us.
+      cprintf("choose pid: %d to run\n", p->pid);
       proc = p;
       switchuvm(p);
       p->state = RUNNING;
@@ -343,6 +492,38 @@ scheduler(void)
       // Process is done running for now.
       // It should have changed its p->state before coming back.
       proc = 0;
+
+    }
+    /*// Switch to chosen process.  It is the process's job
+    // to release ptable.lock and then reacquire it
+    // before jumping back to us.
+    switchuvm(p);
+    p->state = RUNNING;
+    swtch(&cpu->scheduler, proc->context);
+    switchkvm();
+
+    // Process is done running for now.
+    // It should have changed its p->state before coming back.
+    proc = 0;*/
+
+
+    // Updates pstat.
+    /*for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
+      if(p->state != RUNNABLE)
+      continue;
+
+    // Switch to chosen process.  It is the process's job
+    // to release ptable.lock and then reacquire it
+    // before jumping back to us.
+    proc = p;
+    switchuvm(p);
+    p->state = RUNNING;
+    swtch(&cpu->scheduler, proc->context);
+    switchkvm();
+
+    // Process is done running for now.
+    // It should have changed its p->state before coming back.
+    proc = 0;
     }*/
     release(&ptable.lock);
 
@@ -351,9 +532,10 @@ scheduler(void)
 
 // Enter scheduler.  Must hold only ptable.lock
 // and have changed proc->state.
-  void
+void
 sched(void)
 {
+  //cprintf("sched...\n");
   int intena;
 
   if(!holding(&ptable.lock))
@@ -370,41 +552,53 @@ sched(void)
 }
 
 // Give up the CPU for one scheduling round.
-  void
+void
 yield(void)
 {
+  cprintf("yield...\n");
   acquire(&ptable.lock);  //DOC: yieldlock
   proc->state = RUNNABLE;
   // Loop thru pstat.pid to find the slot number in ptable.
-  int i;  // slot idx
-  for (i = 0; i < NPROC; ++i) 
-    if (proc_stat.pid[i] == proc->pid) break;
+  int slot_no;  // slot idx
+  for (slot_no = 0; slot_no < NPROC; ++slot_no) 
+    if (proc_stat.pid[slot_no] == proc->pid) break;
   //assert(i < NPROC);
-  if (i == NPROC)
-    cprintf("i == NPROC\n");
-  int pri = proc_stat.priority[i];
-  ++proc_stat.ticks[i][pri];
+  if (slot_no == NPROC)
+    cprintf("slot_no == NPROC\n");
+  int pri = proc_stat.priority[slot_no];
+  ++proc_stat.ticks[slot_no][pri];
+  cprintf("pid: %d have used %d timerticks.\n",
+	  proc->pid, proc_stat.ticks[slot_no][pri]);
   // Updates priority queues here.
-  int j;
-  for (j = 0; j < NPROC; ++j)
-    if (priqueue[pri][j] == i) break;
-  //assert(j < NPROC);
-  if (j == NPROC)
-    cprintf("j == NPROC\n");
-  int end = priqueue[pri][NPROC] - 1;
-  if (proc_stat.ticks[i][pri] == pow_of_two(pri)) {
-    for (; j < end - 1; ++j)
-      priqueue[pri][j] = priqueue[pri][j+1];
-    if (pri != 3) {
-      priqueue[pri][end] = -1; // not necessary
-      priqueue[pri][NPROC] = end;
-      ++pri;
-      priqueue[pri][priqueue[pri][NPROC]] = i;
-      ++priqueue[pri][NPROC];
-      proc_stat.priority[i] = pri;
-    } else {
-      // RR
-      priqueue[pri][end] = i;
+  if (proc_stat.ticks[slot_no][pri] == tick_bounds(pri) ||
+      (pri == 3 && proc_stat.ticks[slot_no][pri] % 8 == 0)) {
+    switch (pri) {
+      case 0:
+	cprintf("pri 0 to pri 1.\n");
+	remove_from_queue(&q0_head, &q0_tail, proc);
+	append_to_queue(&q1_head, &q1_tail, proc);
+	proc_stat.priority[slot_no] = 1;
+	break;
+      case 1:
+	cprintf("pri 1 to pri 2.\n");
+	remove_from_queue(&q1_head, &q1_tail, proc);
+	append_to_queue(&q2_head, &q2_tail, proc);
+	proc_stat.priority[slot_no] = 2;
+	break;
+      case 2:
+	cprintf("pri 2 to pri 3.\n");
+	remove_from_queue(&q2_head, &q2_tail, proc);
+	append_to_queue(&q3_head, &q3_tail, proc);
+	proc_stat.priority[slot_no] = 3;
+	break;
+      case 3:
+	// RR
+	cprintf("RR here.\n");
+	remove_from_queue(&q3_head, &q3_tail, proc);
+	append_to_queue(&q3_head, &q3_tail, proc);
+	break;
+      default:
+	cprintf("Wrong priority.\n");
     }
   }
   sched();
@@ -413,7 +607,7 @@ yield(void)
 
 // A fork child's very first scheduling by scheduler()
 // will swtch here.  "Return" to user space.
-  void
+void
 forkret(void)
 {
   // Still holding ptable.lock from scheduler.
@@ -424,9 +618,10 @@ forkret(void)
 
 // Atomically release lock and sleep on chan.
 // Reacquires lock when awakened.
-  void
+void
 sleep(void *chan, struct spinlock *lk)
 {
+  cprintf("pid: %d sleeps.\n", proc->pid);
   if(proc == 0)
     panic("sleep");
 
@@ -461,7 +656,7 @@ sleep(void *chan, struct spinlock *lk)
 
 // Wake up all processes sleeping on chan.
 // The ptable lock must be held.
-  static void
+static void
 wakeup1(void *chan)
 {
   struct proc *p;
@@ -470,20 +665,36 @@ wakeup1(void *chan)
     ++slot_no;
     if(p->state == SLEEPING && p->chan == chan) {
       p->state = RUNNABLE;
+      cprintf("pid: %d wakes up.\n", p->pid);
+      dump_queues();
       // move to the front of the queue.
-      int i;  // queue idx
       int pri = proc_stat.priority[slot_no];
-      for (i = 0; i < NPROC; ++i)
-	if (priqueue[pri][i] == slot_no) break;
-      for (; i > 0; --i)
-	priqueue[pri][i] = priqueue[pri][i - 1];
-      priqueue[pri][0] = slot_no;
+      switch(pri) {
+	case 0:
+	  cprintf("move to 0 queue front.\n");
+	  move_to_front(&q0_head, &q0_tail, p);
+	  break; 
+	case 1:
+	  cprintf("move to 1 queue front.\n");
+	  move_to_front(&q1_head, &q1_tail, p);
+	  break; 
+	case 2:
+	  cprintf("move to 2 queue front.\n");
+	  move_to_front(&q2_head, &q2_tail, p);
+	  break; 
+	case 3:
+	  cprintf("move to 3 queue front.\n");
+	  move_to_front(&q3_head, &q3_tail, p);
+	  break;
+	default:
+	  cprintf("Wrong pri again.\n");
+      }
     }
   }
 }
 
 // Wake up all processes sleeping on chan.
-  void
+void
 wakeup(void *chan)
 {
   acquire(&ptable.lock);
@@ -494,15 +705,20 @@ wakeup(void *chan)
 // Kill the process with the given pid.
 // Process won't exit until it returns
 // to user space (see trap in trap.c).
-  int
+int
 kill(int pid)
 {
+  cprintf("kill pid: %d\n", proc->pid);
   struct proc *p;
-
+  int slot_no = -1;
   acquire(&ptable.lock);
   for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
+    ++slot_no;
     if(p->pid == pid){
       p->killed = 1;
+      // remove from queue
+      //int pri = pstat.pri
+      //switch()
       // Wake process from sleep if necessary.
       if(p->state == SLEEPING)
 	p->state = RUNNABLE;
@@ -517,9 +733,10 @@ kill(int pid)
 // Print a process listing to console.  For debugging.
 // Runs when user types ^P on console.
 // No lock to avoid wedging a stuck machine further.
-  void
+void
 procdump(void)
 {
+  cprintf("procdump...\n");
   static char *states[] = {
     [UNUSED]    "unused",
     [EMBRYO]    "embryo",
@@ -552,9 +769,13 @@ procdump(void)
 
 // TODO(byan23): Implements populating pstat struct.
 int getpinfo(struct pstat *p) {
+  if (!p) {
+    cprintf("passing in NULL to getpinfo.\n");
+    return -1;
+  }
   memmove(p->inuse, proc_stat.inuse, NPROC);
   memmove(p->pid, proc_stat.pid, NPROC);
   memmove(p->priority, proc_stat.priority, NPROC);
   memmove(p->ticks, proc_stat.ticks, NPROC * 4);
-  return proc->pid;
+  return 0;
 }

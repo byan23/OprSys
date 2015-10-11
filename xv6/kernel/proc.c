@@ -32,8 +32,8 @@ struct proc *q3_tail = NULL;
 static void wakeup1(void *chan);
 
 // helper functions for queues
-static void dump_queues();
-static void dump_queue(struct proc *head);
+//static void dump_queues();
+//static void dump_queue(struct proc *head);
 static void move_to_front(struct proc **head, struct proc **tail,
 			  struct proc *target);
 static void append_to_queue(struct proc **head, struct proc **tail,
@@ -42,7 +42,7 @@ static void remove_from_queue(struct proc **head, struct proc **tail,
 			      struct proc *target);
 inline int tick_bounds(int n);
 
-static void dump_queues() {
+/*static void dump_queues() {
   cprintf("queue 0: \n");
   dump_queue(q0_head);
   cprintf("queue 1: \n");
@@ -57,15 +57,15 @@ static void dump_queue(struct proc *head) {
   for (; head != NULL; head = head->next)
     cprintf("%d ", head->pid);
   cprintf("\n");
-}
+}*/
 
 static void move_to_front(struct proc **head, struct proc **tail,
 			  struct proc *target) {
-  cprintf("move to front.\n");
+  //cprintf("move to front.\n");
   if (!(*head)) cprintf("head is null.\n");
   if (!target) cprintf("can't find target.\n");
   if (*head == target) {
-    cprintf("Already at the front.\n"); 
+    //cprintf("Already at the front.\n"); 
     return;
   }
   struct proc *p = *head;
@@ -76,49 +76,49 @@ static void move_to_front(struct proc **head, struct proc **tail,
   if (target == *tail) *tail = p;
   target->next = *head;
   *head = target;
-  dump_queues();
+  //dump_queues();
 }
 
 static void append_to_queue(struct proc **head, struct proc **tail,
 			    struct proc *target) {
-  cprintf("pid: %d append to end.\n", target->pid);
+  //cprintf("pid: %d append to end.\n", target->pid);
   if (!target) cprintf("can't find target.\n");
   if (!(*head)) {	// queue is empty
     *head = *tail = target;
     (*tail)->next = NULL;
   } else {
-    cprintf("tail: %d\n", (*tail)->pid);
+    //cprintf("tail: %d\n", (*tail)->pid);
     (*tail)->next = target;
     *tail = target;
     (*tail)->next = NULL;
   }
-  dump_queues();
+  //dump_queues();
 }
 
 static void remove_from_queue(struct proc **head, struct proc **tail,
 			      struct proc *target) {
-  cprintf("remove...\n");
+  //cprintf("remove...\n");
   if (!target) cprintf("can't find target.\n");
   if (*head == target) {
     if (*head == *tail) {
       *tail = NULL;
     }
     *head = target->next;
-    dump_queues();
-    cprintf("tail: %d.\n", (*tail)->pid);
+    //dump_queues();
+    //cprintf("tail: %d.\n", (*tail)->pid);
     return;
   }
   struct proc *p;
   for (p = *head; p != NULL; p = p->next) {
     if (p->next == target) {
-      cprintf("Found the target.\n");
+      //cprintf("Found the target.\n");
       break;
     } 
   }
   p->next = target->next;
   if (*tail == target) *tail = p;
-  dump_queues(); 
-  cprintf("tail: %d.\n", (*tail)->pid);
+  //dump_queues(); 
+  //cprintf("tail: %d.\n", (*tail)->pid);
 }
 
 void
@@ -152,7 +152,7 @@ inline int tick_bounds(int n) {
 static struct proc*
 allocproc(void)
 {
-  cprintf("allocproc...\n");
+  //cprintf("allocproc...\n");
   struct proc *p;
   char *sp;
 
@@ -177,8 +177,6 @@ found:
     proc_stat.ticks[slot_idx][i] = 0;    
   }
   // Adds the new process to the priority queue.
-  //priqueue[0][priqueue[0][NPROC]] = slot_idx;
-  //++priqueue[0][NPROC];
   append_to_queue(&q0_head, &q0_tail, p);
   if (!q0_tail) cprintf("still NULL\n");
   //cprintf("q0_tail: %d\n", q0_tail->pid);
@@ -217,8 +215,6 @@ userinit(void)
   //cprintf("User init...\n");
   struct proc *p;
   extern char _binary_initcode_start[], _binary_initcode_size[];
-
-  //memset(prqueue, 0, (NPROC + 1) * 4 * sizeof(int));
 
   p = allocproc();
   acquire(&ptable.lock);
@@ -313,7 +309,7 @@ fork(void)
 void
 exit(void)
 {
-  cprintf("exit pid: %d.\n", proc->pid);
+  //cprintf("exit pid: %d.\n", proc->pid);
   struct proc *p;
   int fd;
 
@@ -352,7 +348,7 @@ exit(void)
     if (&ptable.proc[slot_no] == proc)
       break;
   }
-  cprintf("found at slot: %d\n", slot_no);
+  //cprintf("found at slot: %d\n", slot_no);
   int pri = proc_stat.priority[slot_no];
   switch(pri) {
     case 0:
@@ -429,7 +425,7 @@ wait(void)
 void
 scheduler(void)
 {
-  cprintf("scheduler...\n");
+  //cprintf("scheduler...\n");
   struct proc *p;
 
   for(;;){
@@ -482,7 +478,7 @@ scheduler(void)
       // Switch to chosen process.  It is the process's job
       // to release ptable.lock and then reacquire it
       // before jumping back to us.
-      cprintf("choose pid: %d to run\n", p->pid);
+      //cprintf("choose pid: %d to run\n", p->pid);
       proc = p;
       switchuvm(p);
       p->state = RUNNING;
@@ -494,37 +490,6 @@ scheduler(void)
       proc = 0;
 
     }
-    /*// Switch to chosen process.  It is the process's job
-    // to release ptable.lock and then reacquire it
-    // before jumping back to us.
-    switchuvm(p);
-    p->state = RUNNING;
-    swtch(&cpu->scheduler, proc->context);
-    switchkvm();
-
-    // Process is done running for now.
-    // It should have changed its p->state before coming back.
-    proc = 0;*/
-
-
-    // Updates pstat.
-    /*for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
-      if(p->state != RUNNABLE)
-      continue;
-
-    // Switch to chosen process.  It is the process's job
-    // to release ptable.lock and then reacquire it
-    // before jumping back to us.
-    proc = p;
-    switchuvm(p);
-    p->state = RUNNING;
-    swtch(&cpu->scheduler, proc->context);
-    switchkvm();
-
-    // Process is done running for now.
-    // It should have changed its p->state before coming back.
-    proc = 0;
-    }*/
     release(&ptable.lock);
 
   }
@@ -555,7 +520,7 @@ sched(void)
 void
 yield(void)
 {
-  cprintf("yield...\n");
+  //cprintf("yield...\n");
   acquire(&ptable.lock);  //DOC: yieldlock
   proc->state = RUNNABLE;
   // Loop thru pstat.pid to find the slot number in ptable.
@@ -567,33 +532,33 @@ yield(void)
     cprintf("slot_no == NPROC\n");
   int pri = proc_stat.priority[slot_no];
   ++proc_stat.ticks[slot_no][pri];
-  cprintf("pid: %d have used %d timerticks.\n",
-	  proc->pid, proc_stat.ticks[slot_no][pri]);
+  //cprintf("pid: %d have used %d timerticks.\n",
+	  //proc->pid, proc_stat.ticks[slot_no][pri]);
   // Updates priority queues here.
   if (proc_stat.ticks[slot_no][pri] == tick_bounds(pri) ||
       (pri == 3 && proc_stat.ticks[slot_no][pri] % 8 == 0)) {
     switch (pri) {
       case 0:
-	cprintf("pri 0 to pri 1.\n");
+	//cprintf("pri 0 to pri 1.\n");
 	remove_from_queue(&q0_head, &q0_tail, proc);
 	append_to_queue(&q1_head, &q1_tail, proc);
 	proc_stat.priority[slot_no] = 1;
 	break;
       case 1:
-	cprintf("pri 1 to pri 2.\n");
+	//cprintf("pri 1 to pri 2.\n");
 	remove_from_queue(&q1_head, &q1_tail, proc);
 	append_to_queue(&q2_head, &q2_tail, proc);
 	proc_stat.priority[slot_no] = 2;
 	break;
       case 2:
-	cprintf("pri 2 to pri 3.\n");
+	//cprintf("pri 2 to pri 3.\n");
 	remove_from_queue(&q2_head, &q2_tail, proc);
 	append_to_queue(&q3_head, &q3_tail, proc);
 	proc_stat.priority[slot_no] = 3;
 	break;
       case 3:
 	// RR
-	cprintf("RR here.\n");
+	//cprintf("RR here.\n");
 	remove_from_queue(&q3_head, &q3_tail, proc);
 	append_to_queue(&q3_head, &q3_tail, proc);
 	break;
@@ -621,7 +586,7 @@ forkret(void)
 void
 sleep(void *chan, struct spinlock *lk)
 {
-  cprintf("pid: %d sleeps.\n", proc->pid);
+  //cprintf("pid: %d sleeps.\n", proc->pid);
   if(proc == 0)
     panic("sleep");
 
@@ -665,25 +630,25 @@ wakeup1(void *chan)
     ++slot_no;
     if(p->state == SLEEPING && p->chan == chan) {
       p->state = RUNNABLE;
-      cprintf("pid: %d wakes up.\n", p->pid);
-      dump_queues();
+      //cprintf("pid: %d wakes up.\n", p->pid);
+      //dump_queues();
       // move to the front of the queue.
       int pri = proc_stat.priority[slot_no];
       switch(pri) {
 	case 0:
-	  cprintf("move to 0 queue front.\n");
+	  //cprintf("move to 0 queue front.\n");
 	  move_to_front(&q0_head, &q0_tail, p);
 	  break; 
 	case 1:
-	  cprintf("move to 1 queue front.\n");
+	  //cprintf("move to 1 queue front.\n");
 	  move_to_front(&q1_head, &q1_tail, p);
 	  break; 
 	case 2:
-	  cprintf("move to 2 queue front.\n");
+	  //cprintf("move to 2 queue front.\n");
 	  move_to_front(&q2_head, &q2_tail, p);
 	  break; 
 	case 3:
-	  cprintf("move to 3 queue front.\n");
+	  //cprintf("move to 3 queue front.\n");
 	  move_to_front(&q3_head, &q3_tail, p);
 	  break;
 	default:
@@ -708,7 +673,7 @@ wakeup(void *chan)
 int
 kill(int pid)
 {
-  cprintf("kill pid: %d\n", proc->pid);
+  //cprintf("kill pid: %d\n", proc->pid);
   struct proc *p;
   int slot_no = -1;
   acquire(&ptable.lock);
@@ -736,7 +701,7 @@ kill(int pid)
 void
 procdump(void)
 {
-  cprintf("procdump...\n");
+  //cprintf("procdump...\n");
   static char *states[] = {
     [UNUSED]    "unused",
     [EMBRYO]    "embryo",
@@ -770,7 +735,7 @@ procdump(void)
 // TODO(byan23): Implements populating pstat struct.
 int getpinfo(struct pstat *p) {
   if (!p) {
-    cprintf("passing in NULL to getpinfo.\n");
+    //cprintf("passing in NULL to getpinfo.\n");
     return -1;
   }
   memmove(p->inuse, proc_stat.inuse, NPROC);
